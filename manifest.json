@@ -1,0 +1,38 @@
+{
+  "name": "30GRIT: CORE",
+  "short_name": "30GRIT",
+  "description": "30일이면 습관이 된다. 30일 코어 챌린지.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0A0A0A",
+  "theme_color": "#0A0A0A",
+  "lang": "ko-KR",
+  "dir": "ltr",
+  "categories": ["fitness", "health", "lifestyle"],
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "오늘의 운동",
+      "short_name": "운동",
+      "description": "오늘의 코어 운동 시작",
+      "url": "./?action=workout",
+      "icons": [{ "src": "icon.svg", "sizes": "any" }]
+    },
+    {
+      "name": "진척 보기",
+      "short_name": "진척",
+      "description": "30일 진척 현황",
+      "url": "./?action=progress",
+      "icons": [{ "src": "icon.svg", "sizes": "any" }]
+    }
+  ]
+}

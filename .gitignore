@@ -1,0 +1,32 @@
+# OS
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+.~lock.*
+
+# Logs
+*.log
+npm-debug.log*
+
+# Env
+.env
+.env.local
+.env.*.local
+
+# Build
+dist/
+build/
+node_modules/
+.next/
+.vercel/
+
+# Test photos (사용자가 테스트로 올린 사진은 커밋 안 함)
+test-photos/
+*.test.png
+*.test.jpg
