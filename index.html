@@ -317,6 +317,13 @@
   .celebrate-icon.bounce { animation: popIn 0.4s, bounce2 0.7s 0.4s 2; }
   @keyframes ringPulse { 0% { box-shadow: 0 0 0 0 rgba(220,38,38,0.6); } 100% { box-shadow: 0 0 0 30px rgba(220,38,38,0); } }
   .char-avatar.pulse { animation: ringPulse 0.8s 2; }
+
+  /* SCHEDULE PREVIEW */
+  .sched-day { display: flex; gap: 12px; background: var(--bg-2); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; margin-bottom: 6px; }
+  .sched-day.rest { opacity: 0.55; }
+  .sched-daynum { font-weight: 900; color: var(--red); width: 36px; flex-shrink: 0; font-size: 14px; }
+  .sched-info { flex: 1; font-size: 14px; line-height: 1.5; }
+  .view-program-btn { width: 100%; background: var(--bg-2); border: 1px solid var(--line); color: var(--text); padding: 14px; border-radius: 12px; font-weight: 800; font-size: 14px; margin-top: 14px; display: flex; align-items: center; justify-content: center; gap: 8px; }
 </style>
 </head>
 <body>
@@ -378,6 +385,7 @@
     <div class="stat"><div class="stat-num" id="statRemain">30</div><div class="stat-label">남은날</div></div>
     <div class="stat"><div class="stat-num" id="statPct">0%</div><div class="stat-label">진척률</div></div>
   </div>
+  <button class="view-program-btn" onclick="showPreview(false)">📋 내 프로그램 전체 보기</button>
 </div>
 
 <!-- WORKOUT -->
@@ -551,6 +559,18 @@
 </div>
 
 <input type="file" id="videoInput" accept="video/*" capture="environment" style="display:none" onchange="handleVideo(event)">
+
+<!-- PROGRAM PREVIEW -->
+<div class="modal" id="previewModal">
+  <div style="overflow-y:auto;flex:1;">
+    <div class="setup-q" style="margin-top:8px;">내 프로그램 📋</div>
+    <div class="setup-sub" id="previewSummary">-</div>
+    <div id="previewNote" style="background:var(--bg-2);border:1px solid var(--line);border-radius:10px;padding:12px 14px;font-size:12px;color:var(--text-dim);margin-bottom:14px;line-height:1.6;">📍 운동 장소(헬스장/홈짐/홈트)는 매일 운동 시작할 때 선택해요.<br>🔁 이 주간 패턴이 30일 반복됩니다.</div>
+    <div id="previewBody"></div>
+  </div>
+  <button class="modal-btn" id="previewBtn" onclick="closePreview()">이대로 시작 →</button>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <!-- PAYWALL -->
@@ -1290,6 +1310,7 @@ const SETUP_STEPS=[
   ]}
 ];
 let excludedSet = new Set();
+let prefMode = 'auto'; // auto | manual
 const TOTAL_SETUP = SETUP_STEPS.length + 1; // +1 = 운동 선호 단계
 function renderSetupStep(){
   const dots=document.getElementById("setupDots"); dots.innerHTML="";
@@ -1306,18 +1327,25 @@ function renderSetupStep(){
     document.getElementById("setupNext").disabled = setupChoices[step.key]===undefined;
   } else {
     // 운동 선호 단계
-    let html=`<div class="setup-q">하고 싶은 운동 고르기</div><div class="setup-sub">싫거나 못하는 운동은 빼세요. (예: 허리 안좋으면 데드 제외)</div>
-      <div class="pref-hint">✓ = 포함 · 누르면 제외. 안 골라도 전부 포함됩니다.</div>`;
-    Object.keys(EX_DB).forEach(g=>{
-      html+=`<div class="pref-group"><div class="pref-group-title">${MUSCLE_NAMES[g]}</div><div class="pref-chips">`;
-      EX_DB[g].forEach(ex=>{ const ex2=excludedSet.has(ex.id); html+=`<button class="pref-chip${ex2?' excluded':''}" onclick="togglePref('${ex.id}')"><span class="mk">${ex2?'✕':'✓'}</span>${ex.name}</button>`; });
-      html+=`</div></div>`;
-    });
+    let html=`<div class="setup-q">운동 구성 방식</div><div class="setup-sub">운동을 잘 몰라도 괜찮아요.</div>
+      <div class="opt-grid" style="margin-bottom:16px;">
+        <button class="opt-card${prefMode==='auto'?' selected':''}" onclick="setPrefMode('auto')"><div class="opt-name">🎯 자동 추천 <span class="badge" style="background:var(--red)">추천</span></div><div class="opt-desc">경력·목표에 맞춰 전문가 루틴으로 알아서 구성. 운동 이름 몰라도 OK.</div></button>
+        <button class="opt-card${prefMode==='manual'?' selected':''}" onclick="setPrefMode('manual')"><div class="opt-name">✋ 직접 고르기</div><div class="opt-desc">싫거나 못하는 운동만 빼세요. (예: 허리 안좋으면 데드 제외)</div></button>
+      </div>`;
+    if(prefMode==='manual'){
+      html+=`<div class="pref-hint">✓ = 포함 · 누르면 제외</div>`;
+      Object.keys(EX_DB).forEach(g=>{
+        html+=`<div class="pref-group"><div class="pref-group-title">${MUSCLE_NAMES[g]}</div><div class="pref-chips">`;
+        EX_DB[g].forEach(ex=>{ const ex2=excludedSet.has(ex.id); html+=`<button class="pref-chip${ex2?' excluded':''}" onclick="togglePref('${ex.id}')"><span class="mk">${ex2?'✕':'✓'}</span>${ex.name}</button>`; });
+        html+=`</div></div>`;
+      });
+    }
     document.getElementById("setupBody").innerHTML=html;
     document.getElementById("setupNext").textContent='프로그램 생성 →';
     document.getElementById("setupNext").disabled=false;
   }
 }
+function setPrefMode(m){ prefMode=m; if(m==='auto') excludedSet.clear(); haptic(10); renderSetupStep(); }
 function togglePref(id){ if(excludedSet.has(id)) excludedSet.delete(id); else excludedSet.add(id); haptic(8); renderSetupStep(); }
 function pickOpt(key,val){ setupChoices[key]=val; haptic(10); renderSetupStep(); }
 function setupNextStep(){
@@ -1332,10 +1360,37 @@ function finishSetup(){
   state.level=setupChoices.level;
   state.frequency=setupChoices.frequency; state.goal=setupChoices.goal;
   state.location='gym'; // 기본값, 운동화면에서 매번 변경 가능
-  state.excludedExercises=[...excludedSet]; save();
+  state.excludedExercises = prefMode==='auto' ? [] : [...excludedSet];
+  state.setupDone=true; save();           // ★ 버그픽스: 셋업 완료 저장
   document.getElementById("setup").classList.remove("active");
-  goto('home');
+  showPreview(true);                       // 프로그램 미리보기 먼저
 }
+// ===== 프로그램 미리보기 (일자별 스케줄) =====
+function buildScheduleHTML(){
+  const split = SPLITS[state.frequency];
+  let html='';
+  split.days.forEach((d,i)=>{
+    if(d.rest){
+      html+=`<div class="sched-day rest"><div class="sched-daynum">${i+1}일</div><div class="sched-info">😌 휴식 — 회복</div></div>`;
+    } else {
+      const groups = d.groups.map(g=>MUSCLE_NAMES[g]).join('·');
+      const plan = getDayPlan(i+1);
+      const exs = plan.exercises.slice(0,4).map(e=>e.variant).join(', ');
+      html+=`<div class="sched-day"><div class="sched-daynum">${i+1}일</div><div class="sched-info"><strong>${d.label}</strong> <span style="color:var(--text-mute)">(${groups})</span><br><span style="font-size:12px;color:var(--text-dim)">${exs}${plan.exercises.length>4?' 외 '+(plan.exercises.length-4)+'개':''}</span></div></div>`;
+    }
+  });
+  return html;
+}
+function showPreview(isSetup){
+  const split = SPLITS[state.frequency];
+  const lvNames={beginner:'입문',novice:'초급',intermediate:'중급',advanced:'상급'};
+  document.getElementById("previewSummary").textContent = `${split.name} · 주 ${state.frequency}회 · ${GOALS[state.goal].name} · ${lvNames[state.level]}`;
+  document.getElementById("previewBody").innerHTML = buildScheduleHTML();
+  document.getElementById("previewBtn").textContent = isSetup ? '이대로 시작 →' : '닫기';
+  document.getElementById("previewNote").style.display = isSetup ? 'block' : 'none';
+  document.getElementById("previewModal").classList.add("active");
+}
+function closePreview(){ document.getElementById("previewModal").classList.remove("active"); goto('home'); }
 
 // =====================================================
 // INIT
