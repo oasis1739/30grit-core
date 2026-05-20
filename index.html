@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>30GRIT: CORE — 30일이면 습관이 된다</title>
+<title>30GRIT — 30일이면 습관이 된다</title>
 
 <!-- PWA -->
 <link rel="manifest" href="manifest.json">
@@ -11,479 +11,344 @@
 <meta name="application-name" content="30GRIT">
 <meta name="format-detection" content="telephone=no">
 <meta name="mobile-web-app-capable" content="yes">
-
-<!-- iOS Safari -->
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="30GRIT">
 <link rel="apple-touch-icon" href="icon.svg">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
 <link rel="mask-icon" href="icon.svg" color="#DC2626">
-
-<!-- Open Graph -->
 <meta property="og:type" content="website">
-<meta property="og:title" content="30GRIT: CORE">
-<meta property="og:description" content="30일이면 습관이 된다. 30일 코어 챌린지.">
+<meta property="og:title" content="30GRIT">
+<meta property="og:description" content="30일이면 습관이 된다. 게임처럼 레벨업하는 헬스.">
 <meta property="og:locale" content="ko_KR">
-
-<!-- Preload -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
 <style>
   :root {
-    --bg: #0A0A0A;
-    --bg-2: #161616;
-    --bg-3: #1F1F1F;
-    --line: #2A2A2A;
-    --red: #DC2626;
-    --red-dark: #991B1B;
-    --text: #F5F5F5;
-    --text-dim: #9CA3AF;
-    --text-mute: #6B7280;
-    --yellow: #FCD34D;
-    --gold: #F59E0B;
+    --bg: #0A0A0A; --bg-2: #161616; --bg-3: #1F1F1F; --line: #2A2A2A;
+    --red: #DC2626; --red-dark: #991B1B; --text: #F5F5F5; --text-dim: #9CA3AF;
+    --text-mute: #6B7280; --yellow: #FCD34D; --gold: #F59E0B; --gem: #38BDF8;
+    --green: #10B981; --purple: #A855F7;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-  html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; overscroll-behavior: none; height: 100%; }
+  html { -webkit-text-size-adjust: 100%; overscroll-behavior: none; height: 100%; }
   html, body {
     background: var(--bg); color: var(--text);
     font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;
-    overscroll-behavior: none; touch-action: manipulation;
+    -webkit-font-smoothing: antialiased; user-select: none; -webkit-user-select: none;
+    -webkit-touch-callout: none; overscroll-behavior: none; touch-action: manipulation;
   }
-  body {
-    max-width: 480px; margin: 0 auto; min-height: 100vh; min-height: 100dvh;
-    position: relative; padding-bottom: calc(80px + env(safe-area-inset-bottom));
-    padding-top: env(safe-area-inset-top);
-  }
-  button { font-family: inherit; cursor: pointer; border: none; touch-action: manipulation; }
+  body { max-width: 480px; margin: 0 auto; min-height: 100dvh; position: relative;
+    padding-bottom: calc(80px + env(safe-area-inset-bottom)); padding-top: env(safe-area-inset-top); }
+  button { font-family: inherit; cursor: pointer; border: none; touch-action: manipulation; color: inherit; }
   input, textarea { font-family: inherit; font-size: 16px; user-select: text; -webkit-user-select: text; }
-
-  /* Active touch state (mobile feedback) */
-  button:active, .day-cell:active, .exercise-item:active,
-  .settings-item:active, .diff-card:active, .style-tab:active,
-  .photo-upload:active, .share-btn:active, .nav-item:active {
-    transform: scale(0.97); transition: transform 0.08s;
-  }
-
-  /* Smooth scroll */
-  .style-tabs, .completion-cards-wrap, .share-body, .screen {
-    -webkit-overflow-scrolling: touch; overscroll-behavior: contain;
-  }
-
-  /* Toast */
-  .toast { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.9); color: #fff; padding: 12px 20px; border-radius: 999px; font-size: 13px; font-weight: 700; z-index: 9999; opacity: 0; pointer-events: none; transition: opacity 0.2s; max-width: 90%; }
-  .toast.show { opacity: 1; }
-
-  /* Loading spinner */
-  .spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.8s linear infinite; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-
-  /* iOS PWA install hint */
-  .ios-install-hint { display: none; position: fixed; bottom: 100px; left: 16px; right: 16px; max-width: 448px; margin: 0 auto; background: var(--bg-2); border: 1px solid var(--line); border-radius: 12px; padding: 12px 16px; z-index: 200; font-size: 13px; }
-  .ios-install-hint.show { display: flex; align-items: center; gap: 8px; animation: fadeIn 0.3s; }
-  .ios-install-hint .x { margin-left: auto; color: var(--text-mute); font-size: 18px; padding: 4px; cursor: pointer; }
-
-  /* HEADER */
-  .header { padding: 24px 20px 16px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--line); }
-  .logo { font-size: 22px; font-weight: 900; letter-spacing: -0.5px; }
-  .logo .num { color: var(--red); }
-  .header-sub { font-size: 11px; color: var(--text-mute); margin-top: 2px; letter-spacing: 0.5px; text-transform: uppercase; }
-  .streak { background: var(--bg-3); padding: 6px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; display: flex; align-items: center; gap: 4px; }
-  .streak .fire { color: var(--red); }
-
-  .screen { display: none; padding: 20px; padding-bottom: 100px; animation: fadeIn 0.25s; }
-  .screen.active { display: block; }
+  button:active, .tap:active { transform: scale(0.97); transition: transform 0.08s; }
   @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-  @keyframes popIn { 0% { transform: scale(0.85); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+  @keyframes popIn { 0% { transform: scale(0.7); opacity: 0; } 60% { transform: scale(1.08); } 100% { transform: scale(1); opacity: 1; } }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes floatUp { 0% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(-60px); opacity: 0; } }
+  @keyframes glow { 0%,100% { box-shadow: 0 0 20px rgba(220,38,38,0.4); } 50% { box-shadow: 0 0 40px rgba(220,38,38,0.7); } }
 
-  /* HERO */
-  .hero { background: linear-gradient(135deg, var(--red) 0%, var(--red-dark) 100%); border-radius: 16px; padding: 24px; margin-bottom: 24px; position: relative; overflow: hidden; }
-  .hero::before { content: ""; position: absolute; top: -50px; right: -50px; width: 180px; height: 180px; background: rgba(255,255,255,0.08); border-radius: 50%; }
-  .hero-day { font-size: 64px; font-weight: 900; line-height: 1; }
-  .hero-day .of { font-size: 24px; opacity: 0.7; font-weight: 700; }
-  .hero-title { font-size: 18px; font-weight: 800; margin-top: 8px; }
-  .hero-sub { font-size: 13px; opacity: 0.9; margin-top: 4px; }
-  .hero-btn { background: #000; color: #fff; padding: 14px 24px; border-radius: 12px; font-weight: 800; font-size: 15px; margin-top: 20px; width: 100%; letter-spacing: 0.5px; }
+  /* HEADER with level bar */
+  .header { padding: 16px 20px 12px; border-bottom: 1px solid var(--line); }
+  .header-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .logo { font-size: 20px; font-weight: 900; letter-spacing: -0.5px; }
+  .logo .num { color: var(--red); }
+  .header-right { display: flex; gap: 8px; align-items: center; }
+  .gem-badge { background: var(--bg-3); padding: 6px 12px; border-radius: 999px; font-size: 13px; font-weight: 800; display: flex; align-items: center; gap: 4px; color: var(--gem); }
+  .streak-badge { background: var(--bg-3); padding: 6px 12px; border-radius: 999px; font-size: 13px; font-weight: 800; display: flex; align-items: center; gap: 4px; }
+  .level-row { display: flex; align-items: center; gap: 10px; }
+  .char-avatar { width: 40px; height: 40px; border-radius: 12px; background: var(--bg-3); display: flex; align-items: center; justify-content: center; font-size: 24px; border: 2px solid var(--red); flex-shrink: 0; }
+  .level-info { flex: 1; }
+  .level-line { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 4px; }
+  .level-title { font-size: 13px; font-weight: 800; }
+  .level-title .lv { color: var(--red); }
+  .level-xp { font-size: 11px; color: var(--text-mute); }
+  .xp-bar { height: 6px; background: var(--bg-3); border-radius: 3px; overflow: hidden; }
+  .xp-fill { height: 100%; background: linear-gradient(90deg, var(--red), var(--gold)); transition: width 0.6s; border-radius: 3px; }
 
-  .section-title { font-size: 14px; font-weight: 800; color: var(--text-dim); margin: 24px 0 12px; letter-spacing: 1px; text-transform: uppercase; }
+  .screen { display: none; padding: 16px; padding-bottom: 100px; animation: fadeIn 0.25s; }
+  .screen.active { display: block; }
+  .section-title { font-size: 13px; font-weight: 800; color: var(--text-dim); margin: 20px 0 10px; letter-spacing: 1px; text-transform: uppercase; }
 
-  .calendar { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
-  .day-cell { aspect-ratio: 1; background: var(--bg-2); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; color: var(--text-mute); position: relative; border: 1px solid var(--line); cursor: pointer; }
+  /* HOME */
+  .season-banner { background: linear-gradient(135deg, var(--purple), #6D28D9); border-radius: 12px; padding: 10px 16px; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; font-size: 13px; font-weight: 700; }
+  .season-banner .badge { background: rgba(0,0,0,0.3); padding: 3px 10px; border-radius: 999px; font-size: 11px; }
+  .hero { background: linear-gradient(135deg, var(--red), var(--red-dark)); border-radius: 16px; padding: 22px; margin-bottom: 18px; position: relative; overflow: hidden; }
+  .hero::before { content: ""; position: absolute; top: -50px; right: -50px; width: 160px; height: 160px; background: rgba(255,255,255,0.08); border-radius: 50%; }
+  .hero-label { font-size: 12px; opacity: 0.85; font-weight: 700; letter-spacing: 1px; }
+  .hero-day { font-size: 54px; font-weight: 900; line-height: 1; margin-top: 2px; }
+  .hero-day .of { font-size: 20px; opacity: 0.7; }
+  .hero-title { font-size: 17px; font-weight: 800; margin-top: 6px; }
+  .hero-sub { font-size: 12px; opacity: 0.9; margin-top: 4px; line-height: 1.5; }
+  .hero-btn { background: #000; color: #fff; padding: 14px; border-radius: 12px; font-weight: 800; font-size: 15px; margin-top: 16px; width: 100%; }
+  .hero-btn.rest { background: rgba(0,0,0,0.4); }
+
+  .calendar { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
+  .day-cell { aspect-ratio: 1; background: var(--bg-2); border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: 700; font-size: 12px; color: var(--text-mute); position: relative; border: 1px solid var(--line); }
+  .day-cell .tag { font-size: 7px; margin-top: 1px; opacity: 0.7; }
   .day-cell.done { background: var(--red); color: #fff; border-color: var(--red); }
   .day-cell.today { border: 2px solid var(--yellow); color: var(--yellow); }
-  .day-cell.rest { background: var(--bg-3); color: var(--text-mute); }
-  .day-cell.rest::after { content: "💤"; position: absolute; bottom: 2px; right: 4px; font-size: 9px; }
-  .day-cell.locked { opacity: 0.3; cursor: not-allowed; }
+  .day-cell.rest { background: var(--bg-3); }
+  .day-cell.locked { opacity: 0.3; }
 
-  .stat-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 16px; }
+  .stat-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-top: 14px; }
   .stat { background: var(--bg-2); border-radius: 10px; padding: 12px; text-align: center; border: 1px solid var(--line); }
   .stat-num { font-size: 20px; font-weight: 900; color: var(--red); }
-  .stat-label { font-size: 10px; color: var(--text-mute); margin-top: 2px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .stat-label { font-size: 10px; color: var(--text-mute); margin-top: 2px; }
 
   /* WORKOUT */
-  .workout-header { margin-bottom: 16px; }
-  .workout-day-badge { display: inline-block; background: var(--red); color: #fff; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 800; letter-spacing: 1px; }
-  .difficulty-tag { background: var(--bg-3); color: var(--text-dim); padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; margin-left: 6px; }
-  .workout-title { font-size: 24px; font-weight: 900; margin-top: 8px; line-height: 1.2; }
-  .video-area { background: var(--bg-2); border-radius: 12px; aspect-ratio: 16/10; display: flex; align-items: center; justify-content: center; border: 1px solid var(--line); margin-bottom: 16px; position: relative; }
-  .video-area::before { content: "▶"; font-size: 48px; color: var(--red); }
-  .video-placeholder-text { position: absolute; bottom: 12px; font-size: 11px; color: var(--text-mute); }
-  .exercise-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
-  .exercise-item { background: var(--bg-2); border-radius: 10px; padding: 14px; display: flex; align-items: center; gap: 12px; border: 1px solid var(--line); cursor: pointer; }
-  .exercise-item.done { opacity: 0.5; border-color: var(--red); }
-  .exercise-item.done .ex-name { text-decoration: line-through; }
+  .workout-header { margin-bottom: 14px; }
+  .wh-badges { display: flex; gap: 6px; flex-wrap: wrap; }
+  .wh-badge { background: var(--red); color: #fff; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 800; }
+  .wh-badge.alt { background: var(--bg-3); color: var(--text-dim); }
+  .workout-title { font-size: 22px; font-weight: 900; margin-top: 8px; }
+  .workout-meta { font-size: 12px; color: var(--text-mute); margin-top: 2px; }
+
+  .ex-card { background: var(--bg-2); border-radius: 12px; border: 1px solid var(--line); margin-bottom: 10px; overflow: hidden; }
+  .ex-card.done { opacity: 0.55; border-color: var(--red); }
+  .ex-head { padding: 14px; display: flex; align-items: center; gap: 12px; }
   .ex-num { background: var(--red); color: #fff; width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 13px; flex-shrink: 0; }
-  .ex-info { flex: 1; }
-  .ex-name { font-weight: 700; font-size: 15px; }
-  .ex-spec { font-size: 12px; color: var(--text-mute); margin-top: 2px; }
-  .ex-swap { background: none; color: var(--text-mute); font-size: 11px; padding: 4px 8px; border: 1px solid var(--line); border-radius: 6px; font-weight: 700; }
-  .ex-check { width: 24px; height: 24px; border: 2px solid var(--line); border-radius: 6px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+  .ex-info { flex: 1; min-width: 0; }
+  .ex-name { font-weight: 800; font-size: 15px; }
+  .ex-target { font-size: 11px; color: var(--text-mute); margin-top: 1px; }
+  .ex-spec { font-size: 12px; color: var(--gold); font-weight: 700; margin-top: 3px; }
+  .ex-info-btn { background: var(--bg-3); color: var(--text-dim); width: 26px; height: 26px; border-radius: 6px; font-size: 13px; flex-shrink: 0; }
+  .ex-check { width: 26px; height: 26px; border: 2px solid var(--line); border-radius: 6px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 14px; }
   .ex-check.done { background: var(--red); border-color: var(--red); color: #fff; }
-  .timer-section { background: var(--bg-2); border-radius: 16px; padding: 24px; text-align: center; border: 1px solid var(--line); margin-bottom: 20px; }
-  .timer-state { font-size: 11px; color: var(--text-mute); letter-spacing: 2px; text-transform: uppercase; font-weight: 800; }
-  .timer-state.work { color: var(--red); }
-  .timer-state.rest { color: var(--yellow); }
-  .timer-display { font-size: 72px; font-weight: 900; line-height: 1; margin: 12px 0; font-variant-numeric: tabular-nums; }
-  .timer-controls { display: flex; gap: 8px; justify-content: center; margin-top: 16px; }
-  .timer-btn { background: var(--bg-3); color: var(--text); padding: 12px 24px; border-radius: 10px; font-weight: 700; font-size: 14px; border: 1px solid var(--line); }
-  .timer-btn.primary { background: var(--red); border-color: var(--red); }
-  .timer-progress-bar { height: 4px; background: var(--bg-3); border-radius: 2px; overflow: hidden; margin-top: 16px; }
-  .timer-progress-fill { height: 100%; background: var(--red); transition: width 0.3s; }
-  .complete-btn { width: 100%; background: var(--red); color: #fff; padding: 18px; border-radius: 12px; font-weight: 800; font-size: 16px; letter-spacing: 0.5px; }
-  .complete-btn:disabled { background: var(--bg-3); color: var(--text-mute); cursor: not-allowed; }
+  /* set tracker */
+  .set-rows { padding: 0 14px 14px; display: none; }
+  .ex-card.expanded .set-rows { display: block; }
+  .set-row { display: flex; align-items: center; gap: 8px; padding: 6px 0; border-top: 1px solid var(--line); }
+  .set-no { font-size: 12px; font-weight: 800; color: var(--text-mute); width: 38px; }
+  .set-input { background: var(--bg-3); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; width: 60px; text-align: center; color: var(--text); font-weight: 700; font-size: 14px; }
+  .set-unit { font-size: 11px; color: var(--text-mute); }
+  .set-done-btn { margin-left: auto; background: var(--bg-3); border: 1px solid var(--line); border-radius: 6px; padding: 6px 12px; font-size: 12px; font-weight: 700; }
+  .set-done-btn.done { background: var(--red); border-color: var(--red); }
+
+  /* rest timer overlay */
+  .rest-timer { position: fixed; bottom: 92px; left: 16px; right: 16px; max-width: 448px; margin: 0 auto; background: var(--bg-2); border: 2px solid var(--red); border-radius: 16px; padding: 16px; z-index: 60; display: none; align-items: center; gap: 14px; animation: popIn 0.3s; }
+  .rest-timer.show { display: flex; }
+  .rest-timer-num { font-size: 32px; font-weight: 900; color: var(--red); font-variant-numeric: tabular-nums; }
+  .rest-timer-info { flex: 1; }
+  .rest-timer-label { font-size: 11px; color: var(--text-mute); letter-spacing: 1px; font-weight: 800; }
+  .rest-timer-next { font-size: 13px; font-weight: 700; }
+  .rest-timer-btns { display: flex; gap: 6px; }
+  .rest-mini-btn { background: var(--bg-3); border-radius: 8px; padding: 8px 10px; font-size: 12px; font-weight: 700; }
+
+  .complete-btn { width: 100%; background: var(--red); color: #fff; padding: 16px; border-radius: 12px; font-weight: 800; font-size: 16px; }
+  .complete-btn:disabled { background: var(--bg-3); color: var(--text-mute); }
+
+  /* LIBRARY */
+  .lib-filter { display: flex; gap: 6px; overflow-x: auto; padding: 4px 0 12px; margin: 0 -16px; padding-left: 16px; padding-right: 16px; }
+  .lib-filter::-webkit-scrollbar { display: none; }
+  .lib-chip { background: var(--bg-2); color: var(--text-dim); padding: 8px 16px; border-radius: 999px; font-size: 13px; font-weight: 700; white-space: nowrap; border: 1px solid var(--line); flex-shrink: 0; }
+  .lib-chip.active { background: var(--red); color: #fff; border-color: var(--red); }
+  .lib-item { background: var(--bg-2); border: 1px solid var(--line); border-radius: 12px; padding: 14px; margin-bottom: 8px; }
+  .lib-item-name { font-size: 15px; font-weight: 800; }
+  .lib-item-target { font-size: 11px; color: var(--red); font-weight: 700; margin-top: 2px; }
+  .lib-item-tip { font-size: 12px; color: var(--text-dim); margin-top: 8px; line-height: 1.5; }
+  .lib-item-variants { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+  .lib-variant { font-size: 10px; background: var(--bg-3); padding: 4px 8px; border-radius: 6px; color: var(--text-mute); }
+
+  /* SHOP */
+  .shop-balance { background: linear-gradient(135deg, var(--gem), #0284C7); border-radius: 16px; padding: 20px; text-align: center; margin-bottom: 16px; }
+  .shop-balance-num { font-size: 40px; font-weight: 900; }
+  .shop-balance-label { font-size: 12px; opacity: 0.9; }
+  .shop-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .shop-item { background: var(--bg-2); border: 1px solid var(--line); border-radius: 12px; padding: 16px; text-align: center; }
+  .shop-item.owned { border-color: var(--green); }
+  .shop-item.equipped { border-color: var(--gold); background: var(--bg-3); }
+  .shop-item-icon { font-size: 36px; margin-bottom: 8px; }
+  .shop-item-name { font-size: 13px; font-weight: 800; }
+  .shop-item-desc { font-size: 10px; color: var(--text-mute); margin-top: 2px; min-height: 24px; }
+  .shop-item-price { margin-top: 8px; background: var(--bg-3); border-radius: 8px; padding: 8px; font-size: 13px; font-weight: 800; color: var(--gem); }
+  .shop-item-price.owned { color: var(--green); }
+  .shop-item-price.equipped { color: var(--gold); background: transparent; }
 
   /* PROGRESS */
-  .progress-hero { background: var(--bg-2); border-radius: 16px; padding: 24px; text-align: center; border: 1px solid var(--line); margin-bottom: 16px; }
-  .progress-percent { font-size: 64px; font-weight: 900; color: var(--red); line-height: 1; }
-  .progress-percent-label { font-size: 12px; color: var(--text-mute); letter-spacing: 1px; }
-  .progress-bar { height: 8px; background: var(--bg-3); border-radius: 4px; overflow: hidden; margin: 16px 0 8px; }
+  .progress-hero { background: var(--bg-2); border-radius: 16px; padding: 22px; text-align: center; border: 1px solid var(--line); margin-bottom: 14px; }
+  .progress-percent { font-size: 56px; font-weight: 900; color: var(--red); line-height: 1; }
+  .progress-bar { height: 8px; background: var(--bg-3); border-radius: 4px; overflow: hidden; margin: 14px 0 8px; }
   .progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--red), var(--yellow)); transition: width 0.5s; }
-  .achievement-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 16px; }
+  .achievement-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
   .achievement { background: var(--bg-2); border-radius: 10px; padding: 14px; border: 1px solid var(--line); }
-  .achievement-icon { font-size: 24px; margin-bottom: 4px; }
-  .achievement-title { font-size: 13px; font-weight: 700; }
+  .achievement-icon { font-size: 22px; }
+  .achievement-title { font-size: 13px; font-weight: 700; margin-top: 4px; }
   .achievement-desc { font-size: 11px; color: var(--text-mute); margin-top: 2px; }
-
-  /* BOTTOM NAV (4 items only) */
-  .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; max-width: 480px; margin: 0 auto; background: rgba(10,10,10,0.95); backdrop-filter: blur(12px); border-top: 1px solid var(--line); display: flex; padding: 8px 0; padding-bottom: max(8px, env(safe-area-inset-bottom)); z-index: 50; }
-  .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 8px 4px; color: var(--text-mute); font-size: 10px; font-weight: 700; background: none; }
-  .nav-item.active { color: var(--red); }
-  .nav-icon { font-size: 20px; }
-
-  /* INTRO + SETUP */
-  .intro-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.97); z-index: 100; padding: 32px 24px; max-width: 480px; margin: 0 auto; flex-direction: column; overflow-y: auto; }
-  .intro-modal.active { display: flex; }
-  .intro-logo { font-size: 48px; font-weight: 900; margin-top: 32px; }
-  .intro-logo .num { color: var(--red); }
-  .intro-tag { font-size: 13px; color: var(--text-mute); letter-spacing: 2px; margin-top: 8px; text-transform: uppercase; font-weight: 700; }
-  .intro-quote { font-size: 22px; font-weight: 800; line-height: 1.4; margin-top: 32px; }
-  .intro-quote .accent { color: var(--red); }
-  .intro-desc { font-size: 14px; color: var(--text-dim); margin-top: 16px; line-height: 1.6; }
-  .intro-btn { margin-top: 32px; background: var(--red); color: #fff; padding: 18px; border-radius: 12px; font-weight: 900; font-size: 16px; letter-spacing: 0.5px; }
-  .setup-screen { padding: 24px 4px; }
-  .setup-q { font-size: 20px; font-weight: 800; margin: 24px 0 4px; }
-  .setup-sub { font-size: 13px; color: var(--text-mute); margin-bottom: 16px; }
-  .difficulty-grid { display: flex; flex-direction: column; gap: 10px; }
-  .diff-card { background: var(--bg-2); border: 2px solid var(--line); border-radius: 12px; padding: 16px; text-align: left; cursor: pointer; transition: all 0.15s; }
-  .diff-card.selected { border-color: var(--red); background: var(--bg-3); }
-  .diff-name { font-size: 18px; font-weight: 900; }
-  .diff-name .badge { background: var(--red); color: #fff; padding: 2px 8px; border-radius: 4px; font-size: 11px; margin-left: 8px; vertical-align: middle; }
-  .diff-desc { font-size: 12px; color: var(--text-dim); margin-top: 4px; }
-  .diff-stats { font-size: 11px; color: var(--text-mute); margin-top: 8px; }
+  .history-item { background: var(--bg-2); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; margin-bottom: 6px; display: flex; align-items: center; gap: 12px; }
+  .history-day { font-weight: 900; font-size: 16px; color: var(--red); width: 50px; }
+  .history-info { flex: 1; font-size: 13px; }
+  .history-mode { font-size: 18px; }
 
   /* SETTINGS */
-  .settings-group { margin-bottom: 24px; }
-  .settings-item { background: var(--bg-2); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; cursor: pointer; }
+  .settings-item { background: var(--bg-2); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
   .settings-item-info { flex: 1; }
   .settings-item-title { font-size: 14px; font-weight: 700; }
   .settings-item-desc { font-size: 11px; color: var(--text-mute); margin-top: 2px; }
-  .toggle { width: 44px; height: 26px; background: var(--bg-3); border-radius: 999px; position: relative; cursor: pointer; transition: all 0.2s; flex-shrink: 0; }
+  .toggle { width: 44px; height: 26px; background: var(--bg-3); border-radius: 999px; position: relative; transition: all 0.2s; flex-shrink: 0; }
   .toggle.on { background: var(--red); }
   .toggle::after { content: ""; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; background: #fff; border-radius: 50%; transition: all 0.2s; }
   .toggle.on::after { left: 21px; }
-  .billing-card { background: linear-gradient(135deg, var(--red) 0%, var(--red-dark) 100%); border-radius: 12px; padding: 20px; margin-bottom: 12px; }
-  .billing-status { font-size: 11px; opacity: 0.9; letter-spacing: 1px; text-transform: uppercase; font-weight: 800; }
-  .billing-title { font-size: 20px; font-weight: 900; margin-top: 4px; }
-  .billing-desc { font-size: 12px; opacity: 0.9; margin-top: 4px; }
+  .billing-card { background: linear-gradient(135deg, var(--red), var(--red-dark)); border-radius: 12px; padding: 18px; margin-bottom: 10px; }
+  .billing-status { font-size: 11px; opacity: 0.9; letter-spacing: 1px; font-weight: 800; }
+  .billing-title { font-size: 18px; font-weight: 900; margin-top: 4px; }
   .billing-cta { background: #000; color: #fff; padding: 10px 16px; border-radius: 8px; font-size: 13px; font-weight: 800; margin-top: 12px; }
 
-  /* DASHBOARD WIDGET */
-  .widget-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px; }
-  .widget { background: var(--bg-2); border: 1px solid var(--line); border-radius: 12px; padding: 14px; }
-  .widget.featured { grid-column: span 2; background: linear-gradient(135deg, var(--red) 0%, var(--red-dark) 100%); border-color: var(--red); }
-  .widget-label { font-size: 10px; opacity: 0.7; letter-spacing: 1px; text-transform: uppercase; font-weight: 800; }
-  .widget-value { font-size: 28px; font-weight: 900; margin-top: 4px; line-height: 1; }
-  .widget-sub { font-size: 11px; opacity: 0.8; margin-top: 6px; }
+  /* BOTTOM NAV (5 items) */
+  .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; max-width: 480px; margin: 0 auto; background: rgba(10,10,10,0.96); backdrop-filter: blur(12px); border-top: 1px solid var(--line); display: flex; padding: 8px 0; padding-bottom: max(8px, env(safe-area-inset-bottom)); z-index: 50; }
+  .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 6px 2px; color: var(--text-mute); font-size: 10px; font-weight: 700; background: none; }
+  .nav-item.active { color: var(--red); }
+  .nav-icon { font-size: 19px; }
 
-  /* ==================== SHARE MODAL (HIP) ==================== */
-  .share-modal { display: none; position: fixed; inset: 0; background: #000; z-index: 200; max-width: 480px; margin: 0 auto; overflow-y: auto; }
-  .share-modal.active { display: block; animation: fadeIn 0.3s; }
-  .share-header { position: sticky; top: 0; background: #000; padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--line); z-index: 10; }
-  .share-header-title { font-size: 16px; font-weight: 900; }
-  .share-close { background: none; color: var(--text); font-size: 24px; padding: 4px 12px; }
-  .share-body { padding: 16px 12px; }
+  /* MODALS (fullscreen) */
+  .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.97); z-index: 100; max-width: 480px; margin: 0 auto; padding: 28px 22px; flex-direction: column; overflow-y: auto; }
+  .modal.active { display: flex; }
+  .intro-logo { font-size: 44px; font-weight: 900; }
+  .intro-logo .num { color: var(--red); }
+  .intro-tag { font-size: 13px; color: var(--text-mute); letter-spacing: 2px; margin-top: 6px; font-weight: 700; }
+  .intro-quote { font-size: 22px; font-weight: 800; line-height: 1.4; margin-top: 28px; }
+  .intro-quote .accent { color: var(--red); }
+  .intro-desc { font-size: 14px; color: var(--text-dim); margin-top: 14px; line-height: 1.6; }
+  .modal-btn { background: var(--red); color: #fff; padding: 16px; border-radius: 12px; font-weight: 900; font-size: 16px; margin-top: auto; }
+  .modal-btn.ghost { background: none; color: var(--text-mute); font-size: 13px; font-weight: 700; margin-top: 8px; padding: 10px; }
+  .modal-btn:disabled { background: var(--bg-3); color: var(--text-mute); }
 
-  /* PHOTO UPLOAD */
-  .photo-upload { background: var(--bg-2); border: 2px dashed var(--line); border-radius: 16px; padding: 32px 20px; text-align: center; margin-bottom: 16px; cursor: pointer; }
-  .photo-upload.has-photo { padding: 0; aspect-ratio: 3/4; background-size: cover; background-position: center; border: none; position: relative; overflow: hidden; }
-  .photo-upload-icon { font-size: 36px; margin-bottom: 8px; }
-  .photo-upload-title { font-size: 16px; font-weight: 800; margin-bottom: 4px; }
-  .photo-upload-sub { font-size: 12px; color: var(--text-mute); }
-  .photo-change { position: absolute; bottom: 12px; right: 12px; background: rgba(0,0,0,0.7); color: #fff; padding: 8px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; }
+  /* SETUP */
+  .setup-q { font-size: 22px; font-weight: 800; margin: 8px 0 4px; }
+  .setup-sub { font-size: 13px; color: var(--text-mute); margin-bottom: 18px; }
+  .setup-progress { display: flex; gap: 4px; margin-bottom: 24px; }
+  .setup-dot { flex: 1; height: 4px; background: var(--bg-3); border-radius: 2px; }
+  .setup-dot.active { background: var(--red); }
+  .opt-grid { display: flex; flex-direction: column; gap: 10px; }
+  .opt-card { background: var(--bg-2); border: 2px solid var(--line); border-radius: 12px; padding: 16px; text-align: left; }
+  .opt-card.selected { border-color: var(--red); background: var(--bg-3); }
+  .opt-name { font-size: 17px; font-weight: 800; }
+  .opt-name .badge { padding: 2px 8px; border-radius: 4px; font-size: 11px; margin-left: 8px; vertical-align: middle; }
+  .opt-desc { font-size: 12px; color: var(--text-dim); margin-top: 4px; }
 
-  .style-tabs { display: flex; gap: 6px; overflow-x: auto; padding: 4px 0 12px; margin: 0 -12px; padding-left: 12px; padding-right: 12px; }
+  /* LEVEL UP / REWARD modal */
+  .celebrate { text-align: center; margin: auto 0; }
+  .celebrate-icon { font-size: 90px; animation: popIn 0.5s; }
+  .celebrate-title { font-size: 28px; font-weight: 900; margin-top: 12px; }
+  .celebrate-title .accent { color: var(--gold); }
+  .celebrate-desc { font-size: 14px; color: var(--text-dim); margin-top: 10px; line-height: 1.6; }
+  .celebrate-reward { background: var(--bg-2); border: 1px solid var(--line); border-radius: 12px; padding: 16px; margin: 20px 0; }
+  .reward-line { display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 16px; font-weight: 800; margin: 6px 0; }
+  .reward-line .gem { color: var(--gem); }
+  .reward-line .xp { color: var(--gold); }
+
+  /* COMPLETE MODE picker */
+  .mode-grid { display: flex; flex-direction: column; gap: 10px; margin: 20px 0; }
+  .mode-card { background: var(--bg-2); border: 1px solid var(--line); border-radius: 12px; padding: 16px; display: flex; align-items: center; gap: 14px; text-align: left; }
+  .mode-icon { font-size: 28px; }
+  .mode-info { flex: 1; }
+  .mode-name { font-size: 15px; font-weight: 800; }
+  .mode-desc { font-size: 12px; color: var(--text-mute); margin-top: 2px; }
+
+  /* SHARE modal */
+  .share-header { position: sticky; top: 0; background: #000; padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--line); z-index: 10; }
+  .share-close { background: none; font-size: 24px; padding: 4px 12px; }
+  .photo-upload { background: var(--bg-2); border: 2px dashed var(--line); border-radius: 16px; padding: 28px 20px; text-align: center; margin-bottom: 14px; }
+  .photo-upload.has-photo { padding: 0; aspect-ratio: 3/4; background-size: cover; background-position: center; border: none; position: relative; }
+  .photo-change { position: absolute; bottom: 12px; right: 12px; background: rgba(0,0,0,0.7); padding: 8px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; }
+  .style-tabs { display: flex; gap: 6px; overflow-x: auto; padding: 4px 0 12px; }
   .style-tabs::-webkit-scrollbar { display: none; }
-  .style-tab { background: var(--bg-2); color: var(--text-dim); padding: 8px 16px; border-radius: 999px; font-size: 13px; font-weight: 700; white-space: nowrap; border: 1px solid var(--line); flex-shrink: 0; }
+  .style-tab { background: var(--bg-2); color: var(--text-dim); padding: 8px 14px; border-radius: 999px; font-size: 12px; font-weight: 700; white-space: nowrap; border: 1px solid var(--line); flex-shrink: 0; }
   .style-tab.active { background: var(--red); color: #fff; border-color: var(--red); }
-
-  /* PREVIEW CANVAS (the actual share card) */
-  .preview-wrap { padding: 0 4px; }
-  .preview-card { aspect-ratio: 9/16; border-radius: 16px; overflow: hidden; position: relative; background-color: var(--bg-3); background-size: cover; background-position: center; box-shadow: 0 12px 40px rgba(0,0,0,0.6); margin-bottom: 16px; }
-  .preview-card.no-photo::before { content: "사진을 추가하면 여기에 표시됩니다"; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: var(--text-mute); font-size: 13px; }
-
-  /* OVERLAY STYLES — 10 designs */
+  .preview-card { aspect-ratio: 9/16; border-radius: 16px; overflow: hidden; position: relative; background: var(--bg-3); background-size: cover; background-position: center; box-shadow: 0 12px 40px rgba(0,0,0,0.6); margin-bottom: 14px; }
+  .preview-card.no-photo::before { content: "사진을 추가하면 표시됩니다"; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: var(--text-mute); font-size: 13px; }
   .ol { position: absolute; inset: 0; pointer-events: none; }
-
-  /* 1. STRAVA - 사진 하단 어둡게 + 중앙 큰 통계 */
-  .ol-strava { background: linear-gradient(180deg, transparent 30%, rgba(0,0,0,0.5) 60%, rgba(0,0,0,0.85) 100%); display: flex; flex-direction: column; justify-content: flex-end; padding: 32px 24px; color: #fff; text-align: center; }
-  .ol-strava .stat-block { margin-bottom: 16px; }
-  .ol-strava .stat-block .l { font-size: 11px; opacity: 0.7; letter-spacing: 1px; text-transform: uppercase; font-weight: 700; }
-  .ol-strava .stat-block .v { font-size: 32px; font-weight: 900; line-height: 1; margin-top: 2px; font-family: 'Helvetica Neue', sans-serif; }
-  .ol-strava .brand { font-size: 13px; font-weight: 900; letter-spacing: 3px; margin-top: 12px; }
-  .ol-strava .brand .num { color: var(--red); }
-
-  /* 2. NIKE - 좌상단 작은 로고 + 우하단 큰 글씨 */
-  .ol-nike { padding: 24px; color: #fff; display: flex; flex-direction: column; justify-content: space-between; }
-  .ol-nike::before { content: ""; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(0,0,0,0.4) 0%, transparent 40%, rgba(0,0,0,0.7) 100%); }
-  .ol-nike > * { position: relative; z-index: 2; }
-  .ol-nike .top { display: flex; align-items: center; gap: 8px; }
-  .ol-nike .top .badge { background: var(--red); padding: 6px 10px; border-radius: 4px; font-size: 11px; font-weight: 900; letter-spacing: 2px; }
-  .ol-nike .bottom { text-align: right; }
-  .ol-nike .bottom .day { font-size: 88px; font-weight: 900; line-height: 0.85; letter-spacing: -3px; }
-  .ol-nike .bottom .t { font-size: 14px; font-weight: 800; margin-top: 8px; letter-spacing: 1px; }
-
-  /* 3. SAMSUNG HEALTH - 상단 둥근 라벨 + 우측 통계 그리드 */
-  .ol-samsung { padding: 20px; color: #fff; display: flex; flex-direction: column; justify-content: space-between; }
-  .ol-samsung .pill { background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); padding: 8px 16px; border-radius: 999px; display: inline-flex; align-items: center; gap: 6px; font-weight: 800; font-size: 13px; align-self: center; border: 1px solid rgba(255,255,255,0.15); }
-  .ol-samsung .pill::before { content: "🏃"; }
-  .ol-samsung .stats { align-self: flex-end; text-align: right; text-shadow: 0 2px 12px rgba(0,0,0,0.8); }
-  .ol-samsung .stats .row { margin-bottom: 14px; }
-  .ol-samsung .stats .l { font-size: 10px; opacity: 0.85; font-weight: 600; }
-  .ol-samsung .stats .v { font-size: 26px; font-weight: 900; line-height: 1.1; }
-
-  /* 4. CENTR - 미니멀 큰 인용구 */
-  .ol-centr { padding: 32px 28px; color: #fff; display: flex; flex-direction: column; justify-content: flex-end; }
-  .ol-centr::before { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 50%, rgba(0,0,0,0.7) 100%); }
-  .ol-centr > * { position: relative; z-index: 2; }
-  .ol-centr .quote { font-size: 32px; font-weight: 900; line-height: 1.15; letter-spacing: -0.5px; }
-  .ol-centr .quote .red { color: var(--red); }
-  .ol-centr .sub { font-size: 13px; opacity: 0.8; margin-top: 12px; font-weight: 700; }
-  .ol-centr .brand { font-size: 11px; letter-spacing: 3px; margin-top: 16px; font-weight: 900; opacity: 0.7; }
-
-  /* 5. APPLE RING - 진척률 링 */
-  .ol-apple { padding: 24px; color: #fff; display: flex; flex-direction: column; justify-content: space-between; }
-  .ol-apple::before { content: ""; position: absolute; inset: 0; background: linear-gradient(0deg, rgba(0,0,0,0.55) 0%, transparent 50%); }
-  .ol-apple > * { position: relative; z-index: 2; }
-  .ol-apple .ring-wrap { display: flex; justify-content: center; margin-top: 32px; }
-  .ol-apple .ring { width: 140px; height: 140px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: conic-gradient(var(--red) calc(var(--pct) * 1%), rgba(255,255,255,0.15) 0); position: relative; }
-  .ol-apple .ring::before { content: ""; position: absolute; inset: 12px; background: rgba(0,0,0,0.4); border-radius: 50%; backdrop-filter: blur(6px); }
-  .ol-apple .ring-center { position: relative; text-align: center; }
-  .ol-apple .ring-center .v { font-size: 36px; font-weight: 900; line-height: 1; }
-  .ol-apple .ring-center .l { font-size: 10px; letter-spacing: 2px; opacity: 0.8; font-weight: 800; margin-top: 4px; }
-  .ol-apple .bottom { display: flex; justify-content: space-around; align-items: center; padding: 12px; background: rgba(0,0,0,0.4); border-radius: 12px; backdrop-filter: blur(8px); }
-  .ol-apple .bottom .col { text-align: center; }
-  .ol-apple .bottom .v { font-size: 18px; font-weight: 900; }
-  .ol-apple .bottom .l { font-size: 9px; opacity: 0.7; letter-spacing: 1px; text-transform: uppercase; font-weight: 700; }
-
-  /* 6. TIKTOK KOREAN - 큰 한글 + 이모지 */
-  .ol-tiktok { padding: 24px; color: #fff; display: flex; flex-direction: column; justify-content: space-between; }
-  .ol-tiktok::before { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 40%, rgba(0,0,0,0.5) 100%); }
-  .ol-tiktok > * { position: relative; z-index: 2; }
-  .ol-tiktok .top-tag { background: #FFEB3B; color: #000; padding: 6px 14px; border-radius: 6px; font-size: 14px; font-weight: 900; align-self: flex-start; transform: rotate(-3deg); box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
-  .ol-tiktok .center { font-size: 38px; font-weight: 900; line-height: 1.15; text-shadow: 0 4px 16px rgba(0,0,0,0.7); }
-  .ol-tiktok .center .hl { background: var(--red); padding: 0 8px; border-radius: 4px; display: inline-block; }
-  .ol-tiktok .bottom { font-size: 13px; opacity: 0.85; font-weight: 700; }
-
-  /* 7. INSTAGRAM WIDGET - 사진 위 작은 위젯 */
-  .ol-insta { padding: 24px; color: #fff; display: flex; flex-direction: column; justify-content: flex-end; }
-  .ol-insta .widget-card { background: rgba(255,255,255,0.95); color: #000; border-radius: 16px; padding: 16px 20px; backdrop-filter: blur(10px); box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
-  .ol-insta .widget-card .row { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
-  .ol-insta .widget-card .logo { font-size: 14px; font-weight: 900; }
-  .ol-insta .widget-card .logo .num { color: var(--red); }
-  .ol-insta .widget-card .day-tag { font-size: 11px; background: #000; color: #fff; padding: 3px 8px; border-radius: 4px; font-weight: 800; margin-left: auto; }
-  .ol-insta .widget-card .stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
-  .ol-insta .widget-card .stats .col { text-align: center; }
-  .ol-insta .widget-card .stats .v { font-size: 18px; font-weight: 900; }
-  .ol-insta .widget-card .stats .l { font-size: 9px; color: #666; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin-top: 2px; }
-
-  /* 8. MINIMAL WHITE - 흰 박스 + 검정 텍스트 */
-  .ol-minimal { padding: 24px; display: flex; flex-direction: column; justify-content: flex-end; }
-  .ol-minimal .card { background: #fff; color: #000; padding: 20px; border-radius: 12px; box-shadow: 0 12px 32px rgba(0,0,0,0.4); }
-  .ol-minimal .card .top { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 12px; }
-  .ol-minimal .card .day { font-size: 32px; font-weight: 900; line-height: 1; letter-spacing: -1px; }
-  .ol-minimal .card .of { font-size: 14px; color: #999; font-weight: 700; }
-  .ol-minimal .card .title { font-size: 16px; font-weight: 800; margin-bottom: 8px; }
-  .ol-minimal .card .meta { font-size: 12px; color: #666; }
-  .ol-minimal .card .brand { font-size: 11px; font-weight: 900; letter-spacing: 2px; margin-top: 12px; padding-top: 12px; border-top: 1px solid #eee; }
-  .ol-minimal .card .brand .num { color: var(--red); }
-
-  /* 9. RED IMPACT - 빨강 띠 + 큰 숫자 */
+  .ol-strava { background: linear-gradient(180deg, transparent 30%, rgba(0,0,0,0.85) 100%); display: flex; flex-direction: column; justify-content: flex-end; padding: 28px 22px; color: #fff; text-align: center; }
+  .ol-strava .b { margin-bottom: 14px; } .ol-strava .l { font-size: 11px; opacity: 0.7; letter-spacing: 1px; font-weight: 700; } .ol-strava .v { font-size: 30px; font-weight: 900; } .ol-strava .brand { font-size: 13px; font-weight: 900; letter-spacing: 3px; margin-top: 10px; } .ol-strava .brand .num { color: var(--red); }
   .ol-impact { color: #fff; display: flex; flex-direction: column; }
-  .ol-impact .top-strip { background: var(--red); padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; }
-  .ol-impact .top-strip .day-num { font-size: 24px; font-weight: 900; }
-  .ol-impact .top-strip .label { font-size: 11px; font-weight: 800; letter-spacing: 1px; }
-  .ol-impact .middle { flex: 1; }
-  .ol-impact .bottom-strip { background: #000; padding: 20px; display: flex; justify-content: space-around; align-items: center; }
-  .ol-impact .bottom-strip .col { text-align: center; }
-  .ol-impact .bottom-strip .v { font-size: 22px; font-weight: 900; line-height: 1; }
-  .ol-impact .bottom-strip .l { font-size: 10px; opacity: 0.6; letter-spacing: 1px; margin-top: 4px; font-weight: 700; }
-  .ol-impact .bottom-strip .brand { color: var(--red); font-size: 12px; font-weight: 900; }
-
-  /* 10. GRADIENT FULL - 다채로운 그라데이션 */
-  .ol-gradient { padding: 24px; color: #fff; display: flex; flex-direction: column; justify-content: space-between; }
-  .ol-gradient::before { content: ""; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(220,38,38,0.85) 0%, rgba(245,158,11,0.7) 50%, rgba(0,0,0,0.85) 100%); mix-blend-mode: multiply; }
+  .ol-impact .top { background: var(--red); padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; } .ol-impact .top .d { font-size: 24px; font-weight: 900; } .ol-impact .top .l { font-size: 11px; font-weight: 800; }
+  .ol-impact .mid { flex: 1; } .ol-impact .bot { background: #000; padding: 18px; display: flex; justify-content: space-around; } .ol-impact .bot .v { font-size: 20px; font-weight: 900; } .ol-impact .bot .l { font-size: 9px; opacity: 0.6; letter-spacing: 1px; } .ol-impact .bot .br { color: var(--red); }
+  .ol-tiktok { padding: 22px; color: #fff; display: flex; flex-direction: column; justify-content: space-between; }
+  .ol-tiktok::before { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 40%, rgba(0,0,0,0.5)); }
+  .ol-tiktok > * { position: relative; z-index: 2; }
+  .ol-tiktok .tag { background: #FFEB3B; color: #000; padding: 6px 14px; border-radius: 6px; font-size: 14px; font-weight: 900; align-self: flex-start; transform: rotate(-3deg); }
+  .ol-tiktok .ctr { font-size: 34px; font-weight: 900; line-height: 1.15; text-shadow: 0 4px 16px rgba(0,0,0,0.7); } .ol-tiktok .ctr .hl { background: var(--red); padding: 0 8px; border-radius: 4px; }
+  .ol-tiktok .bottom { font-size: 13px; font-weight: 700; }
+  .ol-gradient { padding: 22px; color: #fff; display: flex; flex-direction: column; justify-content: space-between; }
+  .ol-gradient::before { content: ""; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(220,38,38,0.85), rgba(245,158,11,0.7) 50%, rgba(0,0,0,0.85)); mix-blend-mode: multiply; }
   .ol-gradient > * { position: relative; z-index: 2; }
-  .ol-gradient .top { display: flex; justify-content: space-between; align-items: flex-start; }
-  .ol-gradient .top .logo-big { font-size: 20px; font-weight: 900; }
-  .ol-gradient .top .logo-big .num { color: var(--yellow); }
-  .ol-gradient .top .day-tag { background: rgba(0,0,0,0.5); padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: 800; backdrop-filter: blur(6px); }
-  .ol-gradient .center { text-align: center; padding: 24px 0; }
-  .ol-gradient .center .big { font-size: 96px; font-weight: 900; line-height: 1; letter-spacing: -4px; }
-  .ol-gradient .center .label { font-size: 14px; font-weight: 800; letter-spacing: 4px; margin-top: 4px; }
-  .ol-gradient .bottom { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
-  .ol-gradient .bottom .col { background: rgba(0,0,0,0.4); padding: 10px; border-radius: 8px; text-align: center; backdrop-filter: blur(6px); }
-  .ol-gradient .bottom .v { font-size: 18px; font-weight: 900; }
-  .ol-gradient .bottom .l { font-size: 9px; opacity: 0.8; letter-spacing: 1px; margin-top: 2px; font-weight: 700; }
-
-  /* SHARE ACTIONS */
-  .share-actions { padding: 12px 4px; display: flex; gap: 8px; position: sticky; bottom: 0; background: linear-gradient(180deg, transparent 0%, #000 30%); padding-top: 16px; padding-bottom: 16px; }
+  .ol-gradient .top { display: flex; justify-content: space-between; } .ol-gradient .lg { font-size: 18px; font-weight: 900; } .ol-gradient .lg .num { color: var(--yellow); }
+  .ol-gradient .ctr { text-align: center; } .ol-gradient .big { font-size: 80px; font-weight: 900; line-height: 1; } .ol-gradient .lbl { font-size: 14px; font-weight: 800; letter-spacing: 3px; }
+  .ol-gradient .bot { display: grid; grid-template-columns: repeat(3,1fr); gap: 6px; } .ol-gradient .col { background: rgba(0,0,0,0.4); padding: 8px; border-radius: 8px; text-align: center; } .ol-gradient .col .v { font-size: 16px; font-weight: 900; } .ol-gradient .col .l { font-size: 9px; opacity: 0.8; }
+  .ol-minimal { padding: 22px; display: flex; flex-direction: column; justify-content: flex-end; } .ol-minimal .c { background: #fff; color: #000; padding: 18px; border-radius: 12px; } .ol-minimal .d { font-size: 30px; font-weight: 900; } .ol-minimal .t { font-size: 15px; font-weight: 800; } .ol-minimal .m { font-size: 12px; color: #666; margin-top: 4px; } .ol-minimal .br { font-size: 11px; font-weight: 900; margin-top: 10px; padding-top: 10px; border-top: 1px solid #eee; } .ol-minimal .br .num { color: var(--red); }
+  .share-actions { padding: 12px 0; display: flex; gap: 8px; }
   .share-btn { flex: 1; padding: 14px; border-radius: 12px; font-weight: 800; font-size: 14px; }
-  .share-btn.primary { background: var(--red); color: #fff; }
-  .share-btn.secondary { background: var(--bg-2); color: var(--text); border: 1px solid var(--line); }
+  .share-btn.primary { background: var(--red); color: #fff; } .share-btn.secondary { background: var(--bg-2); border: 1px solid var(--line); }
 
-  /* RENEW */
-  .renew-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.97); z-index: 150; padding: 32px 24px; max-width: 480px; margin: 0 auto; flex-direction: column; }
-  .renew-modal.active { display: flex; }
-  .renew-trophy { font-size: 80px; text-align: center; margin: 32px 0 16px; }
-  .renew-title { font-size: 26px; font-weight: 900; text-align: center; }
-  .renew-title .accent { color: var(--gold); }
-  .renew-desc { text-align: center; color: var(--text-dim); margin-top: 12px; font-size: 14px; line-height: 1.6; }
-  .renew-stats { background: var(--bg-2); border: 1px solid var(--line); border-radius: 12px; padding: 16px; margin: 24px 0; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; text-align: center; }
-  .renew-stat-num { font-size: 22px; font-weight: 900; color: var(--red); }
-  .renew-stat-label { font-size: 10px; color: var(--text-mute); margin-top: 2px; text-transform: uppercase; letter-spacing: 1px; }
-  .renew-price { background: linear-gradient(135deg, var(--red), var(--red-dark)); border-radius: 12px; padding: 20px; text-align: center; }
-  .renew-price-amount { font-size: 36px; font-weight: 900; }
-  .renew-price-label { font-size: 12px; opacity: 0.9; margin-top: 4px; }
+  /* exercise info modal */
+  .info-sheet { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 120; align-items: flex-end; }
+  .info-sheet.active { display: flex; }
+  .info-content { background: var(--bg-2); width: 100%; max-width: 480px; margin: 0 auto; border-radius: 20px 20px 0 0; padding: 24px; animation: fadeIn 0.2s; }
+  .info-name { font-size: 22px; font-weight: 900; }
+  .info-target { color: var(--red); font-size: 13px; font-weight: 700; margin-top: 4px; }
+  .info-section { margin-top: 16px; } .info-section h4 { font-size: 12px; color: var(--text-mute); letter-spacing: 1px; margin-bottom: 6px; } .info-section p { font-size: 14px; line-height: 1.6; }
 
-  /* PAYWALL (now triggered inline, not as tab) */
-  .paywall-screen { display: none; position: fixed; inset: 0; background: var(--bg); z-index: 130; max-width: 480px; margin: 0 auto; overflow-y: auto; padding: 20px; }
-  .paywall-screen.active { display: block; }
-  .paywall-hero { text-align: center; padding: 32px 0 24px; }
-  .paywall-emoji { font-size: 48px; }
-  .paywall-title { font-size: 28px; font-weight: 900; margin-top: 16px; line-height: 1.2; }
-  .paywall-title .accent { color: var(--red); }
-  .paywall-sub { font-size: 14px; color: var(--text-dim); margin-top: 12px; line-height: 1.6; }
-  .price-card { background: linear-gradient(135deg, var(--red) 0%, var(--red-dark) 100%); border-radius: 16px; padding: 24px; margin: 24px 0; text-align: center; position: relative; }
-  .price-badge { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: #000; color: var(--yellow); padding: 4px 12px; border-radius: 999px; font-size: 11px; font-weight: 800; letter-spacing: 1px; }
-  .price-label { font-size: 13px; opacity: 0.9; font-weight: 700; }
-  .price-amount { font-size: 42px; font-weight: 900; margin-top: 8px; }
-  .price-note { font-size: 12px; opacity: 0.9; margin-top: 4px; }
-  .feature-list { display: flex; flex-direction: column; gap: 12px; margin: 24px 0; }
-  .feature-item { display: flex; gap: 12px; align-items: flex-start; }
-  .feature-check { color: var(--red); font-weight: 800; font-size: 16px; flex-shrink: 0; }
-  .feature-text { font-size: 14px; line-height: 1.5; }
-  .feature-text strong { font-weight: 800; }
-  .cta-btn { width: 100%; background: var(--red); color: #fff; padding: 18px; border-radius: 12px; font-weight: 900; font-size: 16px; letter-spacing: 0.5px; margin-top: 12px; }
-  .cta-sub { text-align: center; font-size: 11px; color: var(--text-mute); margin-top: 12px; line-height: 1.5; }
-  .paywall-close { position: absolute; top: 16px; right: 16px; background: var(--bg-2); color: var(--text); width: 36px; height: 36px; border-radius: 50%; font-size: 18px; }
+  .toast { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.92); color: #fff; padding: 12px 20px; border-radius: 999px; font-size: 13px; font-weight: 700; z-index: 9999; opacity: 0; pointer-events: none; transition: opacity 0.2s; max-width: 90%; text-align: center; }
+  .toast.show { opacity: 1; }
+  .spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.8s linear infinite; }
+  .xp-float { position: fixed; left: 50%; top: 40%; transform: translateX(-50%); font-size: 24px; font-weight: 900; color: var(--gold); z-index: 9998; pointer-events: none; animation: floatUp 1.2s forwards; }
 </style>
 </head>
 <body>
 
 <!-- INTRO -->
-<div class="intro-modal" id="intro">
-  <div class="intro-logo"><span class="num">30</span>GRIT</div>
-  <div class="intro-tag">CORE · 30 DAY CHALLENGE</div>
-  <div class="intro-quote">
-    21일이면 익숙해지고<br>
-    <span class="accent">30일이면 습관이 된다.</span>
-  </div>
-  <div class="intro-desc">
-    하루 5~15분.<br>
-    30일 뒤, 멈출 수 없는 몸을 만든다.
-  </div>
-  <button class="intro-btn" onclick="closeIntro()">계속 →</button>
+<div class="modal" id="intro">
+  <div class="intro-logo" style="margin-top:auto;"><span class="num">30</span>GRIT</div>
+  <div class="intro-tag">LEVEL UP YOUR BODY</div>
+  <div class="intro-quote">21일이면 익숙해지고<br><span class="accent">30일이면 습관이 된다.</span></div>
+  <div class="intro-desc">게임처럼 레벨업하는 헬스.<br>매일 운동 → XP 획득 → 캐릭터 성장 → 보석 모으기.<br>30일은 시작일 뿐, 시즌은 계속된다.</div>
+  <button class="modal-btn" onclick="document.getElementById('intro').classList.remove('active');document.getElementById('setup').classList.add('active');">시작하기 →</button>
 </div>
 
-<!-- SETUP -->
-<div class="intro-modal" id="setup">
-  <div class="setup-screen">
-    <div class="intro-logo"><span class="num">30</span>GRIT</div>
-    <div class="intro-tag">CORE · SETUP</div>
-    <div class="setup-q">난이도를 선택하세요</div>
-    <div class="setup-sub">선택 후 변경 불가. 신중히.</div>
-    <div class="difficulty-grid">
-      <button class="diff-card" data-level="easy" onclick="selectDiff('easy')">
-        <div class="diff-name">입문 <span class="badge" style="background:#10B981;">EASY</span></div>
-        <div class="diff-desc">운동을 거의 안 해본 사람. 기본 70%.</div>
-        <div class="diff-stats">하루 4~10분 · 플랭크 시작 15초</div>
-      </button>
-      <button class="diff-card selected" data-level="standard" onclick="selectDiff('standard')">
-        <div class="diff-name">표준 <span class="badge">STANDARD</span></div>
-        <div class="diff-desc">기본 운동은 가능한 사람. 권장.</div>
-        <div class="diff-stats">하루 5~15분 · 플랭크 시작 20초</div>
-      </button>
-      <button class="diff-card" data-level="hard" onclick="selectDiff('hard')">
-        <div class="diff-name">하드코어 <span class="badge" style="background:#000;border:1px solid var(--red);">HARD</span></div>
-        <div class="diff-desc">운동 좀 한다는 사람. 기본 140%.</div>
-        <div class="diff-stats">하루 8~22분 · 플랭크 시작 30초</div>
-      </button>
-    </div>
-  </div>
-  <button class="intro-btn" onclick="finishSetup()">시작 — DAY 1</button>
+<!-- SETUP (5 steps) -->
+<div class="modal" id="setup">
+  <div class="setup-progress" id="setupDots"></div>
+  <div id="setupBody"></div>
+  <button class="modal-btn" id="setupNext" onclick="setupNextStep()">다음</button>
 </div>
 
 <!-- HEADER -->
-<div class="header">
-  <div>
+<div class="header" id="appHeader" style="display:none;">
+  <div class="header-top">
     <div class="logo"><span class="num">30</span>GRIT</div>
-    <div class="header-sub">CORE · 30 DAY</div>
+    <div class="header-right">
+      <div class="gem-badge">💎 <span id="hdrGems">0</span></div>
+      <div class="streak-badge">🔥 <span id="hdrStreak">0</span></div>
+    </div>
   </div>
-  <div class="streak"><span class="fire">🔥</span> <span id="streakCount">0</span>일</div>
+  <div class="level-row">
+    <div class="char-avatar" id="hdrAvatar">🥚</div>
+    <div class="level-info">
+      <div class="level-line">
+        <div class="level-title"><span class="lv">Lv.<span id="hdrLevel">1</span></span> <span id="hdrTitle">뉴비</span></div>
+        <div class="level-xp"><span id="hdrXpNow">0</span> / <span id="hdrXpNext">250</span> XP</div>
+      </div>
+      <div class="xp-bar"><div class="xp-fill" id="hdrXpFill" style="width:0%"></div></div>
+    </div>
+  </div>
 </div>
 
 <!-- HOME -->
-<div class="screen active" id="screen-home">
-  <div class="widget-grid">
-    <div class="widget featured">
-      <div class="widget-label">오늘의 진행</div>
-      <div class="widget-value">DAY <span id="wgDay">1</span></div>
-      <div class="widget-sub">CYCLE <span id="wgCycle">1</span> · <span id="wgDiff">STANDARD</span></div>
-    </div>
-    <div class="widget">
-      <div class="widget-label">연속</div>
-      <div class="widget-value" style="color:var(--red);">🔥<span id="wgStreak">0</span></div>
-      <div class="widget-sub">연속일</div>
-    </div>
-    <div class="widget">
-      <div class="widget-label">누적</div>
-      <div class="widget-value"><span id="wgMin">0</span><span style="font-size:14px;opacity:0.6;">분</span></div>
-      <div class="widget-sub">운동시간</div>
-    </div>
+<div class="screen" id="screen-home">
+  <div class="season-banner">
+    <span>🏆 SEASON <span id="seasonNum">1</span></span>
+    <span class="badge">DAY <span id="seasonDay">1</span>/30</span>
   </div>
-
-  <div class="hero">
+  <div class="hero" id="heroBox">
+    <div class="hero-label" id="heroLabel">오늘의 운동</div>
     <div class="hero-day"><span id="heroDay">1</span><span class="of"> / 30</span></div>
-    <div class="hero-title" id="heroTitle">DAY 1 — 시작</div>
-    <div class="hero-sub" id="heroSub">플랭크 20초 × 2 · 크런치 10 × 2 · 힙브릿지 10 × 2</div>
-    <button class="hero-btn" onclick="goto('workout')">오늘의 운동 시작 →</button>
+    <div class="hero-title" id="heroTitle">DAY 1</div>
+    <div class="hero-sub" id="heroSub"></div>
+    <button class="hero-btn" id="heroBtn" onclick="startToday()">오늘의 운동 시작 →</button>
   </div>
-
-  <div class="section-title">30일 캘린더</div>
+  <div class="section-title">시즌 캘린더</div>
   <div class="calendar" id="calendar"></div>
-
   <div class="stat-row">
     <div class="stat"><div class="stat-num" id="statDone">0</div><div class="stat-label">완료</div></div>
     <div class="stat"><div class="stat-num" id="statRemain">30</div><div class="stat-label">남은날</div></div>
@@ -494,167 +359,143 @@
 <!-- WORKOUT -->
 <div class="screen" id="screen-workout">
   <div class="workout-header">
-    <span class="workout-day-badge">DAY <span id="wDay">1</span></span>
-    <span class="difficulty-tag" id="wDiff">STANDARD</span>
-    <div class="workout-title" id="wTitle">시작</div>
-  </div>
-  <div class="video-area">
-    <div class="video-placeholder-text">영상은 본인 촬영분으로 교체</div>
-  </div>
-  <div class="timer-section">
-    <div class="timer-state work" id="timerState">WORK</div>
-    <div class="timer-display" id="timerDisplay">00:30</div>
-    <div class="timer-progress-bar"><div class="timer-progress-fill" id="timerBar" style="width:0%"></div></div>
-    <div class="timer-controls">
-      <button class="timer-btn primary" id="timerBtn" onclick="toggleTimer()">▶ START</button>
-      <button class="timer-btn" onclick="resetTimer()">↻ RESET</button>
+    <div class="wh-badges">
+      <span class="wh-badge">DAY <span id="wDay">1</span></span>
+      <span class="wh-badge alt" id="wSplit">전신</span>
+      <span class="wh-badge alt" id="wLoc">헬스장</span>
     </div>
+    <div class="workout-title" id="wTitle">전신 A</div>
+    <div class="workout-meta" id="wMeta">예상 35분 · 5개 운동</div>
   </div>
-  <div class="section-title">오늘의 운동</div>
-  <div class="exercise-list" id="exerciseList"></div>
-  <button class="complete-btn" id="completeBtn" onclick="completeDay()">DAY 완료 인증 ✓</button>
+  <div id="exContainer"></div>
+  <button class="complete-btn" id="completeBtn" onclick="openCompleteModal()">운동 완료 ✓</button>
+</div>
+
+<!-- LIBRARY -->
+<div class="screen" id="screen-library">
+  <div class="section-title">운동 라이브러리</div>
+  <p style="font-size:12px;color:var(--text-mute);margin-bottom:10px;">내 루틴은 고정이지만, 어떤 운동들이 있는지 구경해보세요.</p>
+  <div class="lib-filter" id="libFilter"></div>
+  <div id="libList"></div>
+</div>
+
+<!-- SHOP -->
+<div class="screen" id="screen-shop">
+  <div class="shop-balance">
+    <div class="shop-balance-num">💎 <span id="shopGems">0</span></div>
+    <div class="shop-balance-label">보유 보석 (GRIT)</div>
+  </div>
+  <div class="section-title">캐릭터 스킨</div>
+  <div class="shop-grid" id="shopChars"></div>
+  <div class="section-title">파워업</div>
+  <div class="shop-grid" id="shopPowers"></div>
+  <div class="section-title">인증샷 스타일</div>
+  <div class="shop-grid" id="shopStyles"></div>
 </div>
 
 <!-- PROGRESS -->
 <div class="screen" id="screen-progress">
   <div class="progress-hero">
     <div class="progress-percent"><span id="progPct">0</span>%</div>
-    <div class="progress-percent-label">CYCLE <span id="progCycle">1</span> PROGRESS</div>
+    <div style="font-size:12px;color:var(--text-mute);">SEASON <span id="progSeason">1</span> · <span id="progDone">0</span>/30 DAYS</div>
     <div class="progress-bar"><div class="progress-bar-fill" id="progBar" style="width:0%"></div></div>
-    <div style="font-size:12px;color:var(--text-mute);margin-top:8px;"><span id="progDone">0</span> / 30 DAYS COMPLETE</div>
   </div>
   <div class="section-title">달성 현황</div>
   <div class="achievement-grid">
-    <div class="achievement"><div class="achievement-icon">🔥</div><div class="achievement-title">연속 <span id="achStreak">0</span>일</div><div class="achievement-desc">현재 연속 기록</div></div>
-    <div class="achievement"><div class="achievement-icon">⏱️</div><div class="achievement-title">총 <span id="achTime">0</span>분</div><div class="achievement-desc">누적 운동 시간</div></div>
-    <div class="achievement"><div class="achievement-icon">💪</div><div class="achievement-title">최장 플랭크</div><div class="achievement-desc"><span id="achPlank">0</span>초 기록</div></div>
-    <div class="achievement"><div class="achievement-icon">📅</div><div class="achievement-title">사이클</div><div class="achievement-desc"><span id="achCycle">1</span>회 도전 중</div></div>
+    <div class="achievement"><div class="achievement-icon">⭐</div><div class="achievement-title">Lv.<span id="achLevel">1</span> <span id="achTitle">뉴비</span></div><div class="achievement-desc">현재 레벨</div></div>
+    <div class="achievement"><div class="achievement-icon">🔥</div><div class="achievement-title">연속 <span id="achStreak">0</span>일</div><div class="achievement-desc">스트릭 (프리즈 <span id="achFreeze">0</span>개)</div></div>
+    <div class="achievement"><div class="achievement-icon">💪</div><div class="achievement-title"><span id="achTotal">0</span>회 운동</div><div class="achievement-desc">누적 운동</div></div>
+    <div class="achievement"><div class="achievement-icon">🏆</div><div class="achievement-title">시즌 <span id="achSeason">1</span></div><div class="achievement-desc">진행 중</div></div>
   </div>
+  <div class="section-title">최근 기록</div>
+  <div id="historyList"></div>
 </div>
 
-<!-- SETTINGS (결제 포함) -->
+<!-- SETTINGS -->
 <div class="screen" id="screen-settings">
   <div class="section-title">멤버십</div>
-  <div class="settings-group">
-    <div class="billing-card">
-      <div class="billing-status" id="billStatus">UNPAID · DAY 1 무료</div>
-      <div class="billing-title">30GRIT: CORE · CYCLE <span id="billCycle">1</span></div>
-      <div class="billing-desc">한 사이클 = 30일 챌린지 · 자동결제 없음</div>
-      <button class="billing-cta" onclick="showPaywall()">사이클 결제 — ₩4,900</button>
-    </div>
-    <div class="settings-item">
-      <div class="settings-item-info"><div class="settings-item-title">완주 보상</div><div class="settings-item-desc">3사이클(90일) 완주 시 평생이용권 무료</div></div>
-      <div style="font-size:12px;font-weight:800;color:var(--gold);"><span id="cycleProgress">0</span>/3</div>
-    </div>
-    <div class="settings-item">
-      <div class="settings-item-info"><div class="settings-item-title">결제 내역</div><div class="settings-item-desc">사이클 별 결제 기록</div></div>
-      <div style="color:var(--text-mute);">→</div>
-    </div>
+  <div class="billing-card">
+    <div class="billing-status" id="billStatus">UNPAID · DAY 1 무료</div>
+    <div class="billing-title">SEASON <span id="billSeason">1</span></div>
+    <div style="font-size:12px;opacity:0.9;margin-top:4px;">30일 1시즌 · 자동결제 없음</div>
+    <button class="billing-cta" onclick="showPaywall()">시즌 잠금 해제 — ₩4,900</button>
   </div>
 
-  <div class="section-title">알림</div>
-  <div class="settings-group">
-    <div class="settings-item">
-      <div class="settings-item-info"><div class="settings-item-title">매일 운동 알림</div><div class="settings-item-desc">매일 정해진 시간에 푸시</div></div>
-      <div class="toggle on" onclick="this.classList.toggle('on')"></div>
-    </div>
-    <div class="settings-item">
-      <div class="settings-item-info"><div class="settings-item-title">알림 시간</div><div class="settings-item-desc">오전 7:00</div></div>
-      <div style="color:var(--text-mute);">→</div>
-    </div>
-    <div class="settings-item">
-      <div class="settings-item-info"><div class="settings-item-title">연속 끊김 경고</div><div class="settings-item-desc">밤 10시 미완료 시 알림</div></div>
-      <div class="toggle on" onclick="this.classList.toggle('on')"></div>
-    </div>
-  </div>
+  <div class="section-title">내 프로그램</div>
+  <div class="settings-item"><div class="settings-item-info"><div class="settings-item-title">경력 / 장소 / 빈도</div><div class="settings-item-desc" id="setProgDesc">-</div></div></div>
+  <div class="settings-item" onclick="if(confirm('프로그램을 다시 설정하면 현재 시즌 진척이 초기화됩니다.')){state.setupDone=false;save();location.reload();}"><div class="settings-item-info"><div class="settings-item-title">프로그램 재설정</div><div class="settings-item-desc">경력/장소/빈도 다시 선택</div></div><div style="color:var(--text-mute);">→</div></div>
 
-  <div class="section-title">앱 잠금 (집중 모드)</div>
-  <div class="settings-group">
-    <div class="settings-item">
-      <div class="settings-item-info"><div class="settings-item-title">운동 안 하면 SNS 잠금</div><div class="settings-item-desc">완료 전까지 인스타/유튜브 차단</div></div>
-      <div class="toggle" onclick="this.classList.toggle('on')"></div>
-    </div>
-    <div class="settings-item">
-      <div class="settings-item-info"><div class="settings-item-title">잠금 대상 앱</div><div class="settings-item-desc">3개 선택됨</div></div>
-      <div style="color:var(--text-mute);">→</div>
-    </div>
-    <div class="settings-item">
-      <div class="settings-item-info"><div class="settings-item-title">PIN 잠금</div><div class="settings-item-desc">30GRIT 앱 자체 잠금</div></div>
-      <div class="toggle" onclick="this.classList.toggle('on')"></div>
-    </div>
-  </div>
+  <div class="section-title">알림 · 집중</div>
+  <div class="settings-item"><div class="settings-item-info"><div class="settings-item-title">매일 운동 알림</div><div class="settings-item-desc">오전 7:00 푸시</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+  <div class="settings-item"><div class="settings-item-info"><div class="settings-item-title">세트간 휴식 자동 타이머</div><div class="settings-item-desc">세트 완료 시 자동 시작</div></div><div class="toggle on" id="tgRest" onclick="this.classList.toggle('on')"></div></div>
+  <div class="settings-item"><div class="settings-item-info"><div class="settings-item-title">운동 안 하면 SNS 잠금</div><div class="settings-item-desc">완료 전까지 인스타/유튜브 차단</div></div><div class="toggle" onclick="this.classList.toggle('on')"></div></div>
+  <div class="settings-item"><div class="settings-item-info"><div class="settings-item-title">진동 피드백</div><div class="settings-item-desc">버튼/타이머 진동</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
 
-  <div class="section-title">대시보드 위젯</div>
-  <div class="settings-group">
-    <div class="settings-item">
-      <div class="settings-item-info"><div class="settings-item-title">홈화면 위젯</div><div class="settings-item-desc">DAY · 연속일 · 누적시간</div></div>
-      <div class="toggle on" onclick="this.classList.toggle('on')"></div>
-    </div>
-    <div class="settings-item">
-      <div class="settings-item-info"><div class="settings-item-title">잠금화면 위젯</div><div class="settings-item-desc">오늘의 운동 미리보기</div></div>
-      <div class="toggle on" onclick="this.classList.toggle('on')"></div>
-    </div>
-    <div class="settings-item">
-      <div class="settings-item-info"><div class="settings-item-title">애플워치 표시</div><div class="settings-item-desc">진행률 + 타이머</div></div>
-      <div class="toggle" onclick="this.classList.toggle('on')"></div>
-    </div>
-  </div>
-
-  <div class="section-title">기타</div>
-  <div class="settings-group">
-    <div class="settings-item">
-      <div class="settings-item-info"><div class="settings-item-title">진동 알림</div><div class="settings-item-desc">타이머 전환 시 진동</div></div>
-      <div class="toggle on" onclick="this.classList.toggle('on')"></div>
-    </div>
-    <div class="settings-item">
-      <div class="settings-item-info"><div class="settings-item-title">사운드</div><div class="settings-item-desc">운동 시작/종료 신호음</div></div>
-      <div class="toggle on" onclick="this.classList.toggle('on')"></div>
-    </div>
-    <div class="settings-item" onclick="if(confirm('진척 데이터를 모두 초기화합니다.')) { localStorage.clear(); location.reload(); }">
-      <div class="settings-item-info"><div class="settings-item-title" style="color:var(--red);">데이터 초기화</div><div class="settings-item-desc">진척/설정 모두 삭제</div></div>
-      <div style="color:var(--red);">→</div>
-    </div>
-  </div>
+  <div class="section-title">데이터</div>
+  <div class="settings-item" onclick="backupData()"><div class="settings-item-info"><div class="settings-item-title">데이터 백업 (내보내기)</div><div class="settings-item-desc">진척/레벨/보석 JSON 저장</div></div><div style="color:var(--gem);">↓</div></div>
+  <div class="settings-item" onclick="document.getElementById('restoreInput').click()"><div class="settings-item-info"><div class="settings-item-title">데이터 복원 (가져오기)</div><div class="settings-item-desc">백업 파일에서 복원</div></div><div style="color:var(--gem);">↑</div></div>
+  <input type="file" id="restoreInput" accept="application/json" style="display:none" onchange="restoreData(event)">
+  <div class="settings-item" onclick="if(confirm('모든 데이터(진척/레벨/보석)를 삭제합니다. 백업하셨나요?')){localStorage.clear();location.reload();}"><div class="settings-item-info"><div class="settings-item-title" style="color:var(--red);">데이터 초기화</div><div class="settings-item-desc">전체 삭제</div></div><div style="color:var(--red);">→</div></div>
 </div>
 
-<!-- ==================== SHARE MODAL ==================== -->
-<div class="share-modal" id="share">
+<!-- COMPLETE MODE picker -->
+<div class="modal" id="completeModal">
+  <div style="margin-top:auto;"></div>
+  <div class="setup-q">운동 완료! 🎉</div>
+  <div class="setup-sub">어떻게 기록할까요? 사진은 선택입니다.</div>
+  <div class="mode-grid">
+    <button class="mode-card" onclick="finishWorkout('photo')">
+      <div class="mode-icon">📸</div>
+      <div class="mode-info"><div class="mode-name">지금 인증샷 만들기</div><div class="mode-desc">사진 + 힙한 오버레이로 SNS 공유</div></div>
+    </button>
+    <button class="mode-card" onclick="finishWorkout('later')">
+      <div class="mode-icon">⏰</div>
+      <div class="mode-info"><div class="mode-name">나중에 후기 사진</div><div class="mode-desc">운동만 완료, 사진은 나중에 추가</div></div>
+    </button>
+    <button class="mode-card" onclick="finishWorkout('quiet')">
+      <div class="mode-icon">✓</div>
+      <div class="mode-info"><div class="mode-name">조용히 완료</div><div class="mode-desc">사진 없이 나 혼자 달성</div></div>
+    </button>
+  </div>
+  <button class="modal-btn ghost" onclick="document.getElementById('completeModal').classList.remove('active')">취소</button>
+</div>
+
+<!-- REWARD / LEVEL UP -->
+<div class="modal" id="rewardModal">
+  <div class="celebrate">
+    <div class="celebrate-icon" id="rwIcon">🎉</div>
+    <div class="celebrate-title" id="rwTitle">DAY 완료!</div>
+    <div class="celebrate-desc" id="rwDesc"></div>
+    <div class="celebrate-reward">
+      <div class="reward-line"><span class="xp">+<span id="rwXp">120</span> XP</span></div>
+      <div class="reward-line"><span class="gem">💎 +<span id="rwGem">5</span> GRIT</span></div>
+    </div>
+  </div>
+  <button class="modal-btn" id="rwBtn" onclick="closeReward()">계속</button>
+</div>
+
+<!-- SHARE -->
+<div class="modal" id="share" style="padding:0;">
   <div class="share-header">
-    <button class="share-close" onclick="closeShare()">←</button>
-    <div class="share-header-title">완료 인증 만들기</div>
+    <button class="share-close" onclick="document.getElementById('share').classList.remove('active')">←</button>
+    <div style="font-weight:900;">인증샷 만들기</div>
     <div style="width:40px;"></div>
   </div>
-  <div class="share-body">
-    <!-- 사진 업로드 -->
+  <div style="padding:16px;overflow-y:auto;flex:1;">
     <div class="photo-upload" id="photoUpload" onclick="document.getElementById('photoInput').click()">
-      <div class="photo-upload-icon">📸</div>
-      <div class="photo-upload-title">운동 인증샷 추가</div>
-      <div class="photo-upload-sub">카메라로 찍거나 갤러리에서 선택</div>
+      <div style="font-size:36px;">📸</div>
+      <div style="font-size:16px;font-weight:800;margin-top:8px;">운동 인증샷 추가</div>
+      <div style="font-size:12px;color:var(--text-mute);margin-top:4px;">카메라 또는 갤러리</div>
     </div>
-    <input type="file" id="photoInput" accept="image/*" capture="environment" style="display:none;" onchange="handlePhoto(event)">
-
-    <!-- 스타일 탭 -->
-    <div class="section-title" style="margin-top:8px;">스타일 선택</div>
+    <input type="file" id="photoInput" accept="image/*" capture="environment" style="display:none" onchange="handlePhoto(event)">
     <div class="style-tabs" id="styleTabs">
       <button class="style-tab active" data-style="strava">STRAVA</button>
-      <button class="style-tab" data-style="nike">NIKE</button>
-      <button class="style-tab" data-style="samsung">SAMSUNG</button>
-      <button class="style-tab" data-style="centr">CENTR</button>
-      <button class="style-tab" data-style="apple">APPLE RING</button>
-      <button class="style-tab" data-style="tiktok">TIKTOK</button>
-      <button class="style-tab" data-style="insta">INSTA</button>
-      <button class="style-tab" data-style="minimal">MINIMAL</button>
       <button class="style-tab" data-style="impact">IMPACT</button>
+      <button class="style-tab" data-style="tiktok">TIKTOK</button>
       <button class="style-tab" data-style="gradient">GRADIENT</button>
+      <button class="style-tab" data-style="minimal">MINIMAL</button>
     </div>
-
-    <!-- 프리뷰 -->
-    <div class="preview-wrap">
-      <div class="preview-card" id="previewCard">
-        <div class="ol" id="previewOverlay"></div>
-      </div>
-    </div>
-
+    <div class="preview-card no-photo" id="previewCard"><div class="ol" id="previewOverlay"></div></div>
     <div class="share-actions">
       <button class="share-btn secondary" id="saveBtn" onclick="captureCard('save')">💾 저장</button>
       <button class="share-btn primary" id="shareBtn" onclick="captureCard('share')">📤 공유</button>
@@ -662,660 +503,750 @@
   </div>
 </div>
 
-<!-- PAYWALL (modal, not tab) -->
-<div class="paywall-screen" id="paywall">
-  <button class="paywall-close" onclick="document.getElementById('paywall').classList.remove('active')">✕</button>
-  <div class="paywall-hero">
-    <div class="paywall-emoji">🔥</div>
-    <div class="paywall-title">DAY 2부터<br><span class="accent">진짜 변화 시작.</span></div>
-    <div class="paywall-sub">Day 1만 무료. 30일 풀 챌린지는 결제 후.<br>구독 아님. 한 사이클 1번 결제.</div>
-  </div>
-  <div class="price-card">
-    <div class="price-badge">CYCLE 1</div>
-    <div class="price-label">30GRIT: CORE · 30일 사이클</div>
-    <div class="price-amount">₩4,900</div>
-    <div class="price-note">30일 1회 챌린지 · 자동결제 X</div>
-  </div>
-  <div class="feature-list">
-    <div class="feature-item"><span class="feature-check">✓</span><div class="feature-text"><strong>30일 풀 콘텐츠 (Day 1~30)</strong></div></div>
-    <div class="feature-item"><span class="feature-check">✓</span><div class="feature-text"><strong>10가지 힙한 인증샷 오버레이</strong></div></div>
-    <div class="feature-item"><span class="feature-check">✓</span><div class="feature-text"><strong>앱 잠금 + 대시보드 위젯</strong></div></div>
-    <div class="feature-item"><span class="feature-check">✓</span><div class="feature-text"><strong>3사이클 완주 시 평생이용권 무료</strong></div></div>
-  </div>
-  <button class="cta-btn" onclick="confirmPay()">결제하기 — ₩4,900</button>
-  <div class="cta-sub">자동결제 없음 · 7일 환불보장</div>
+<!-- exercise info sheet -->
+<div class="info-sheet" id="infoSheet" onclick="if(event.target.id==='infoSheet')this.classList.remove('active')">
+  <div class="info-content" id="infoContent"></div>
 </div>
 
-<!-- RENEW -->
-<div class="renew-modal" id="renew">
-  <div class="renew-trophy">🏆</div>
-  <div class="renew-title">30일 완주!<br><span class="accent">습관이 시작됐다.</span></div>
-  <div class="renew-desc">21일이면 익숙해지고, 30일이면 습관이 된다.<br>이제 멈추지 마세요.</div>
-  <div class="renew-stats">
-    <div><div class="renew-stat-num" id="rwCycle">1</div><div class="renew-stat-label">완주 사이클</div></div>
-    <div><div class="renew-stat-num" id="rwMin">0</div><div class="renew-stat-label">누적 분</div></div>
-    <div><div class="renew-stat-num" id="rwPlank">0</div><div class="renew-stat-label">최장 플랭크</div></div>
+<!-- REST TIMER -->
+<div class="rest-timer" id="restTimer">
+  <div class="rest-timer-num" id="restNum">90</div>
+  <div class="rest-timer-info">
+    <div class="rest-timer-label">REST</div>
+    <div class="rest-timer-next" id="restNext">다음 세트 준비</div>
   </div>
-  <div class="renew-price">
-    <div class="renew-price-amount">₩4,900</div>
-    <div class="renew-price-label">다음 30일 사이클</div>
+  <div class="rest-timer-btns">
+    <button class="rest-mini-btn" onclick="addRest(30)">+30s</button>
+    <button class="rest-mini-btn" onclick="skipRest()">SKIP</button>
   </div>
-  <button class="intro-btn" onclick="renewCycle()" style="margin-top:16px;">다음 사이클 시작 →</button>
-  <button style="background:none;color:var(--text-mute);font-size:12px;margin-top:8px;padding:8px;" onclick="document.getElementById('renew').classList.remove('active');">나중에</button>
 </div>
 
-<!-- TOAST -->
 <div class="toast" id="toast"></div>
 
-<!-- iOS PWA INSTALL HINT -->
-<div class="ios-install-hint" id="iosHint">
-  <span>📲</span>
-  <div style="font-size:12px;line-height:1.4;">
-    <strong>홈화면에 추가</strong><br>
-    <span style="color:var(--text-mute);">공유 버튼 → "홈 화면에 추가" 누르면 앱처럼 사용 가능</span>
+<!-- PAYWALL -->
+<div class="modal" id="paywall">
+  <button style="position:absolute;top:16px;right:16px;background:var(--bg-2);width:36px;height:36px;border-radius:50%;font-size:18px;" onclick="document.getElementById('paywall').classList.remove('active')">✕</button>
+  <div style="margin-top:auto;text-align:center;">
+    <div style="font-size:48px;">🔥</div>
+    <div style="font-size:26px;font-weight:900;margin-top:12px;">DAY 2부터<br><span style="color:var(--red);">진짜 시작.</span></div>
+    <div style="font-size:14px;color:var(--text-dim);margin-top:12px;line-height:1.6;">Day 1 무료 체험 끝.<br>시즌 1 (30일) 잠금 해제 = 단 한 번 결제.</div>
   </div>
-  <span class="x" onclick="document.getElementById('iosHint').classList.remove('show'); localStorage.setItem('iosHintDismissed','1')">×</span>
+  <div style="background:linear-gradient(135deg,var(--red),var(--red-dark));border-radius:16px;padding:22px;margin:24px 0;text-align:center;">
+    <div style="font-size:13px;opacity:0.9;font-weight:700;">SEASON 1 · 30일</div>
+    <div style="font-size:40px;font-weight:900;margin-top:6px;">₩4,900</div>
+    <div style="font-size:12px;opacity:0.9;margin-top:4px;">자동결제 없음 · 시즌당 1회</div>
+  </div>
+  <div style="font-size:13px;line-height:2;margin-bottom:20px;">
+    ✓ 30일 풀 프로그램 (개인 맞춤 분할)<br>
+    ✓ 레벨업 · 캐릭터 성장 · 보석 시스템<br>
+    ✓ 운동 라이브러리 + 자세 가이드<br>
+    ✓ 10종 인증샷 + 완료 3모드<br>
+    ✓ 3시즌(90일) 완주 시 평생이용권 무료
+  </div>
+  <button class="modal-btn" onclick="confirmPay()">결제하고 시작 — ₩4,900</button>
+  <div style="text-align:center;font-size:11px;color:var(--text-mute);margin-top:10px;">7일 환불보장 · 자동결제 없음</div>
 </div>
 
-<!-- BOTTOM NAV (4 items: 결제 제거) -->
-<nav class="bottom-nav">
+<!-- NAV -->
+<nav class="bottom-nav" id="appNav" style="display:none;">
   <button class="nav-item active" data-screen="home" onclick="goto('home')"><span class="nav-icon">🏠</span>홈</button>
   <button class="nav-item" data-screen="workout" onclick="goto('workout')"><span class="nav-icon">💪</span>운동</button>
+  <button class="nav-item" data-screen="library" onclick="goto('library')"><span class="nav-icon">📚</span>운동목록</button>
+  <button class="nav-item" data-screen="shop" onclick="goto('shop')"><span class="nav-icon">💎</span>상점</button>
   <button class="nav-item" data-screen="progress" onclick="goto('progress')"><span class="nav-icon">📊</span>진척</button>
-  <button class="nav-item" data-screen="settings" onclick="goto('settings')"><span class="nav-icon">⚙️</span>설정</button>
 </nav>
 
 <script>
-// ========== PROGRAM ==========
-const PROGRAM_BASE = [
-  { day:1,  title:"시작",       rest:false, exercises:[{name:"플랭크",specBase:[20,2,"초"]},{name:"크런치",specBase:[10,2,"회"]},{name:"힙브릿지",specBase:[10,2,"회"]}] },
-  { day:2,  title:"안착",       rest:false, exercises:[{name:"플랭크",specBase:[25,2,"초"]},{name:"데드버그",specBase:[8,2,"회"]},{name:"슈퍼맨",specBase:[10,2,"회"]}] },
-  { day:3,  title:"리듬",       rest:false, exercises:[{name:"플랭크",specBase:[30,2,"초"]},{name:"크런치",specBase:[12,2,"회"]},{name:"힙브릿지",specBase:[12,2,"회"]}] },
-  { day:4,  title:"휴식",       rest:true, exercises:[{name:"가벼운 스트레칭",specBase:["3분",1,""]}] },
-  { day:5,  title:"확장",       rest:false, exercises:[{name:"플랭크",specBase:[30,3,"초"]},{name:"레그레이즈",specBase:[8,2,"회"]},{name:"버드독",specBase:[8,2,"회"]}] },
-  { day:6,  title:"측면",       rest:false, exercises:[{name:"사이드플랭크",specBase:[15,2,"초"]},{name:"크런치",specBase:[15,2,"회"]},{name:"슈퍼맨",specBase:[12,2,"회"]}] },
-  { day:7,  title:"1주 평가",    rest:false, exercises:[{name:"플랭크 MAX",specBase:["MAX",1,""]},{name:"크런치 MAX",specBase:["MAX",1,""]},{name:"힙브릿지",specBase:[15,2,"회"]}] },
-  { day:8,  title:"강도 ↑",     rest:false, exercises:[{name:"플랭크",specBase:[40,3,"초"]},{name:"마운틴클라이머",specBase:[20,2,"회"]},{name:"러시안트위스트",specBase:[10,2,"회"]},{name:"슈퍼맨",specBase:[12,2,"회"]}] },
-  { day:9,  title:"측면 강화",   rest:false, exercises:[{name:"사이드플랭크",specBase:[20,4,"초"]},{name:"레그레이즈",specBase:[10,2,"회"]},{name:"데드버그",specBase:[10,2,"회"]}] },
-  { day:10, title:"중간 점검",   rest:false, exercises:[{name:"플랭크",specBase:[45,3,"초"]},{name:"크런치",specBase:[20,2,"회"]},{name:"힙브릿지",specBase:[15,3,"회"]}] },
-  { day:11, title:"휴식",       rest:true, exercises:[{name:"전신 스트레칭",specBase:["5분",1,""]}] },
-  { day:12, title:"심박 ↑",     rest:false, exercises:[{name:"마운틴클라이머",specBase:[30,3,"회"]},{name:"레그레이즈",specBase:[12,2,"회"]},{name:"사이드플랭크",specBase:[25,2,"초"]}] },
-  { day:13, title:"종합",        rest:false, exercises:[{name:"플랭크",specBase:[50,3,"초"]},{name:"러시안트위스트",specBase:[15,2,"회"]},{name:"슈퍼맨",specBase:[15,2,"회"]},{name:"버드독",specBase:[10,2,"회"]}] },
-  { day:14, title:"2주 평가",    rest:false, exercises:[{name:"플랭크 1분",specBase:[60,3,"초"]},{name:"마운틴클라이머 MAX",specBase:["MAX",1,""]},{name:"크런치 MAX",specBase:["MAX",1,""]}] },
-  { day:15, title:"새 영역",     rest:false, exercises:[{name:"플랭크",specBase:[60,3,"초"]},{name:"V업",specBase:[8,2,"회"]},{name:"사이드플랭크",specBase:[30,2,"초"]}] },
-  { day:16, title:"호로우",      rest:false, exercises:[{name:"호로우홀드",specBase:[20,3,"초"]},{name:"레그레이즈",specBase:[15,3,"회"]},{name:"마운틴클라이머",specBase:[40,2,"회"]}] },
-  { day:17, title:"폭발력",      rest:false, exercises:[{name:"플랭크잭",specBase:[20,3,"회"]},{name:"러시안트위스트",specBase:[20,2,"회"]},{name:"슈퍼맨",specBase:[20,2,"회"]}] },
-  { day:18, title:"휴식+요가",  rest:true, exercises:[{name:"요가 시퀀스",specBase:["5분",1,""]}] },
-  { day:19, title:"고급 진입",   rest:false, exercises:[{name:"플랭크+숄더탭",specBase:[60,1,"초"]},{name:"레그레이즈",specBase:[18,2,"회"]},{name:"V업",specBase:[10,2,"회"]}] },
-  { day:20, title:"바이시클",    rest:false, exercises:[{name:"호로우홀드",specBase:[30,3,"초"]},{name:"바이시클크런치",specBase:[30,2,"회"]},{name:"사이드플랭크딥",specBase:[10,2,"회"]}] },
-  { day:21, title:"3주 평가",    rest:false, exercises:[{name:"플랭크+숄더탭",specBase:[60,1,"초"]},{name:"레그레이즈 MAX",specBase:["MAX",1,""]},{name:"V업 MAX",specBase:["MAX",1,""]}] },
-  { day:22, title:"극강",        rest:false, exercises:[{name:"플랭크",specBase:[75,3,"초"]},{name:"V업",specBase:[12,3,"회"]},{name:"마운틴클라이머",specBase:[50,2,"회"]},{name:"슈퍼맨",specBase:[25,2,"회"]}] },
-  { day:23, title:"가위차기",    rest:false, exercises:[{name:"호로우홀드",specBase:[40,3,"초"]},{name:"시저킥",specBase:[30,2,"회"]},{name:"사이드플랭크",specBase:[40,2,"초"]}] },
-  { day:24, title:"폭발",        rest:false, exercises:[{name:"플랭크잭",specBase:[30,3,"회"]},{name:"러시안트위스트",specBase:[25,3,"회"]},{name:"레그레이즈",specBase:[20,3,"회"]}] },
-  { day:25, title:"회복",        rest:true, exercises:[{name:"폼롤러+스트레칭",specBase:["5분",1,""]}] },
-  { day:26, title:"최종 단계",   rest:false, exercises:[{name:"플랭크",specBase:[90,3,"초"]},{name:"V업",specBase:[15,3,"회"]},{name:"바이시클크런치",specBase:[40,2,"회"]},{name:"사이드플랭크딥",specBase:[15,2,"회"]}] },
-  { day:27, title:"풀바디",      rest:false, exercises:[{name:"호로우홀드",specBase:[45,3,"초"]},{name:"마운틴클라이머",specBase:[60,2,"회"]},{name:"토터치",specBase:[20,2,"회"]},{name:"슈퍼맨",specBase:[30,2,"회"]}] },
-  { day:28, title:"4주 평가",    rest:false, exercises:[{name:"플랭크 MAX",specBase:["MAX",1,""]},{name:"V업",specBase:[20,3,"회"]},{name:"사이드플랭크 MAX",specBase:["MAX",1,""]}] },
-  { day:29, title:"D-1",         rest:false, exercises:[{name:"종합 루틴",specBase:["전운동 1회",1,""]}] },
-  { day:30, title:"최종 평가",   rest:false, exercises:[{name:"BEFORE/AFTER",specBase:["사진 측정",1,""]},{name:"종합 루틴",specBase:["전체 1세트",1,""]}] }
+// =====================================================
+// EXERCISE DATABASE (부위별, 장소별 변형)
+// =====================================================
+const EX_DB = {
+  chest: [
+    { id:'bench', name:'벤치프레스', target:'가슴 전체', gym:'바벨', homegym:'덤벨 벤치프레스', home:'푸쉬업', rest:120, tip:'견갑을 뒤로 모으고 가슴으로 밀어내세요. 바는 유두 라인.', warn:'손목이 꺾이지 않게, 어깨가 말리지 않게 주의.' },
+    { id:'incline', name:'인클라인 프레스', target:'윗가슴', gym:'바벨/스미스', homegym:'덤벨 인클라인', home:'파이크 푸쉬업', rest:90, tip:'30~45도 경사. 윗가슴 자극에 집중.', warn:'너무 높은 각도는 어깨 개입 증가.' },
+    { id:'fly', name:'체스트 플라이', target:'가슴 안쪽', gym:'펙덱/케이블', homegym:'덤벨 플라이', home:'무릎 푸쉬업', rest:75, tip:'팔꿈치 살짝 굽힌 채 가슴을 쥐어짠다는 느낌.', warn:'팔꿈치 완전히 펴면 부상 위험.' },
+    { id:'dips', name:'딥스', target:'아랫가슴/삼두', gym:'딥스머신', homegym:'의자 딥스', home:'벤치 딥스', rest:90, tip:'상체를 앞으로 기울이면 가슴, 세우면 삼두.', warn:'어깨 통증 있으면 깊이 제한.' }
+  ],
+  back: [
+    { id:'deadlift', name:'데드리프트', target:'등/하체 전체', gym:'바벨', homegym:'덤벨 데드리프트', home:'슈퍼맨', rest:180, tip:'허리 중립 유지, 바를 몸에 붙여 끌어올린다.', warn:'허리 굽으면 즉시 중단. 가장 부상 잦은 운동.' },
+    { id:'pullup', name:'풀업', target:'광배근', gym:'철봉', homegym:'밴드 풀업', home:'테이블 인버티드 로우', rest:120, tip:'견갑을 먼저 내리고 당긴다. 가슴을 바에.', warn:'반동 사용 자제.' },
+    { id:'row', name:'바벨 로우', target:'등 두께', gym:'바벨', homegym:'덤벨 로우', home:'백팩 로우', rest:90, tip:'상체 45도, 배꼽 방향으로 당긴다.', warn:'허리로 반동 주지 않기.' },
+    { id:'latpull', name:'랫풀다운', target:'광배근', gym:'케이블', homegym:'밴드 풀다운', home:'밴드 풀다운', rest:75, tip:'가슴을 펴고 쇄골 방향으로 당긴다.', warn:'목 뒤로 당기지 말 것.' }
+  ],
+  legs: [
+    { id:'squat', name:'스쿼트', target:'하체 전체', gym:'바벨', homegym:'고블릿 스쿼트', home:'맨몸 스쿼트', rest:150, tip:'무릎이 발끝 방향, 엉덩이를 뒤로 빼며 앉는다.', warn:'무릎이 안으로 모이지 않게.' },
+    { id:'legpress', name:'레그프레스', target:'대퇴사두', gym:'레그프레스 머신', homegym:'백팩 스쿼트', home:'점프 스쿼트', rest:120, tip:'발 위치로 자극 부위 조절. 무릎 완전히 펴지 않기.', warn:'허리가 시트에서 뜨지 않게.' },
+    { id:'lunge', name:'런지', target:'대퇴/둔근', gym:'덤벨', homegym:'덤벨 런지', home:'맨몸 런지', rest:90, tip:'앞 무릎 90도, 상체 곧게.', warn:'앞 무릎이 발끝 넘지 않게.' },
+    { id:'legcurl', name:'레그컬', target:'햄스트링', gym:'레그컬 머신', homegym:'밴드 레그컬', home:'노르딕 컬', rest:75, tip:'천천히 수축하고 통제하며 내린다.', warn:'반동 금지.' },
+    { id:'calf', name:'카프레이즈', target:'종아리', gym:'카프머신', homegym:'덤벨 카프', home:'한발 카프레이즈', rest:60, tip:'최대한 높이 들고 1초 정지.', warn:'발목 꺾임 주의.' }
+  ],
+  shoulders: [
+    { id:'ohp', name:'오버헤드 프레스', target:'어깨 전체', gym:'바벨', homegym:'덤벨 숄더프레스', home:'파이크 푸쉬업', rest:120, tip:'코어 단단히, 머리 위로 곧게 밀어올린다.', warn:'허리 과신전 주의.' },
+    { id:'lateral', name:'사이드 레터럴 레이즈', target:'측면 삼각근', gym:'덤벨/케이블', homegym:'덤벨 레터럴', home:'밴드 레터럴', rest:60, tip:'새끼손가락이 살짝 위로, 어깨 높이까지.', warn:'반동/승모근 개입 자제.' },
+    { id:'facepull', name:'페이스 풀', target:'후면 삼각근', gym:'케이블', homegym:'밴드 페이스풀', home:'밴드 페이스풀', rest:60, tip:'얼굴 쪽으로 당기며 외회전.', warn:'무게보다 자세 우선.' }
+  ],
+  arms: [
+    { id:'curl', name:'바벨 컬', target:'이두', gym:'바벨/EZ바', homegym:'덤벨 컬', home:'밴드 컬', rest:75, tip:'팔꿈치 고정, 이두로만 들어올린다.', warn:'반동 금지.' },
+    { id:'pushdown', name:'트라이셉스 푸시다운', target:'삼두', gym:'케이블', homegym:'밴드 푸시다운', home:'다이아몬드 푸쉬업', rest:75, tip:'팔꿈치 옆구리 고정, 끝까지 편다.', warn:'어깨로 누르지 않기.' },
+    { id:'hammer', name:'해머 컬', target:'이두/전완', gym:'덤벨', homegym:'덤벨 해머컬', home:'밴드 해머컬', rest:60, tip:'중립 그립 유지.', warn:'손목 꺾임 주의.' }
+  ],
+  core: [
+    { id:'plank', name:'플랭크', target:'코어 전체', gym:'맨몸', homegym:'플랭크', home:'플랭크', rest:60, tip:'엉덩이 일직선, 코어에 힘.', warn:'허리 처짐 주의.' },
+    { id:'legraise', name:'행잉 레그레이즈', target:'하복부', gym:'철봉', homegym:'누워서 레그레이즈', home:'누워서 레그레이즈', rest:60, tip:'반동 없이 골반을 말아올린다.', warn:'허리 들뜸 주의.' },
+    { id:'crunch', name:'크런치', target:'상복부', gym:'맨몸/케이블', homegym:'크런치', home:'크런치', rest:45, tip:'복부를 수축하며 갈비뼈를 골반으로.', warn:'목으로 당기지 않기.' },
+    { id:'russian', name:'러시안 트위스트', target:'복사근', gym:'플레이트', homegym:'덤벨 트위스트', home:'맨몸 트위스트', rest:45, tip:'상체를 비틀며 좌우.', warn:'허리 무리 시 발 내리기.' }
+  ]
+};
+const MUSCLE_NAMES = { chest:'가슴', back:'등', legs:'하체', shoulders:'어깨', arms:'팔', core:'코어' };
+
+// SPLIT 템플릿 (주간 빈도별)
+const SPLITS = {
+  3: { name:'전신 3분할', days:[
+        {label:'전신 A', groups:['chest','back','legs']},
+        {label:'휴식', rest:true},
+        {label:'전신 B', groups:['shoulders','legs','core']},
+        {label:'휴식', rest:true},
+        {label:'전신 C', groups:['back','arms','core']},
+        {label:'휴식', rest:true},
+        {label:'휴식', rest:true}
+      ]},
+  4: { name:'상하체 2분할', days:[
+        {label:'상체 A', groups:['chest','back','shoulders']},
+        {label:'하체 A', groups:['legs','core']},
+        {label:'휴식', rest:true},
+        {label:'상체 B', groups:['back','chest','arms']},
+        {label:'하체 B', groups:['legs','core']},
+        {label:'휴식', rest:true},
+        {label:'휴식', rest:true}
+      ]},
+  5: { name:'PPL+상하체', days:[
+        {label:'가슴/삼두', groups:['chest','arms']},
+        {label:'등/이두', groups:['back','arms']},
+        {label:'하체', groups:['legs','core']},
+        {label:'어깨', groups:['shoulders','core']},
+        {label:'전신', groups:['chest','back','legs']},
+        {label:'휴식', rest:true},
+        {label:'휴식', rest:true}
+      ]},
+  6: { name:'PPL 2회전', days:[
+        {label:'PUSH A', groups:['chest','shoulders','arms']},
+        {label:'PULL A', groups:['back','arms']},
+        {label:'LEGS A', groups:['legs','core']},
+        {label:'PUSH B', groups:['shoulders','chest','arms']},
+        {label:'PULL B', groups:['back','core']},
+        {label:'LEGS B', groups:['legs','core']},
+        {label:'휴식', rest:true}
+      ]}
+};
+
+// 목표별 세트/렙/강도
+const GOALS = {
+  hypertrophy: { name:'근비대', sets:4, reps:'8-12', restMul:1.0 },
+  strength:    { name:'근력',   sets:5, reps:'4-6',  restMul:1.4 },
+  fatloss:     { name:'다이어트', sets:3, reps:'12-15', restMul:0.6 },
+  maintain:    { name:'체력유지', sets:3, reps:'10-12', restMul:0.85 }
+};
+const LEVEL_FACTOR = { beginner:{exCount:4,setAdj:-1}, novice:{exCount:5,setAdj:0}, intermediate:{exCount:6,setAdj:0}, advanced:{exCount:7,setAdj:1} };
+
+// =====================================================
+// GAMIFICATION
+// =====================================================
+const TITLES = [
+  {min:1,name:'뉴비',icon:'🥚'},{min:5,name:'헬린이',icon:'🐣'},{min:10,name:'러너',icon:'🏃'},
+  {min:18,name:'헬창',icon:'💪'},{min:30,name:'머슬',icon:'🏋️'},{min:45,name:'머신',icon:'🦾'},
+  {min:65,name:'비스트',icon:'🔥'},{min:90,name:'그릿마스터',icon:'👑'}
+];
+function levelFromXp(xp){ return Math.floor(xp/250)+1; }
+function xpForLevel(lv){ return (lv-1)*250; }
+function titleFor(lv){ let t=TITLES[0]; for(const x of TITLES){ if(lv>=x.min) t=x; } return t; }
+
+const SHOP_CHARS = [
+  {id:'default',icon:'💪',name:'기본',desc:'기본 캐릭터',price:0},
+  {id:'ninja',icon:'🥷',name:'닌자',desc:'민첩의 화신',price:150},
+  {id:'robot',icon:'🤖',name:'머신',desc:'지치지 않는',price:200},
+  {id:'lion',icon:'🦁',name:'라이언',desc:'정글의 왕',price:250},
+  {id:'dragon',icon:'🐉',name:'드래곤',desc:'전설의 존재',price:400},
+  {id:'alien',icon:'👽',name:'에일리언',desc:'한계 초월',price:350}
+];
+const SHOP_POWERS = [
+  {id:'freeze',icon:'🧊',name:'스트릭 프리즈',desc:'하루 빠져도 연속 유지',price:30,consumable:true},
+  {id:'xp2x',icon:'⚡',name:'XP 부스터',desc:'다음 운동 XP 2배',price:50,consumable:true},
+  {id:'gem2x',icon:'💰',name:'보석 부스터',desc:'다음 운동 보석 2배',price:40,consumable:true}
+];
+const SHOP_STYLES = [
+  {id:'strava',icon:'🏃',name:'STRAVA',desc:'기본 제공',price:0},
+  {id:'impact',icon:'💥',name:'IMPACT',desc:'강렬한 띠',price:0},
+  {id:'tiktok',icon:'🎵',name:'TIKTOK',desc:'바이럴 감성',price:100},
+  {id:'gradient',icon:'🌈',name:'GRADIENT',desc:'화려한',price:120},
+  {id:'minimal',icon:'⬜',name:'MINIMAL',desc:'미니멀 화이트',price:100}
 ];
 
-const DIFF_FACTOR = { easy: 0.7, standard: 1.0, hard: 1.4 };
+// =====================================================
+// STATE
+// =====================================================
+let state = JSON.parse(localStorage.getItem("30grit_v2") || "null") || {
+  setupDone:false, level:'novice', location:'gym', frequency:4, goal:'hypertrophy',
+  season:1, currentDay:1, completedDays:[], history:[],
+  xp:0, gems:0, totalWorkouts:0, streakFreezes:0,
+  character:'default', ownedChars:['default'], ownedStyles:['strava','impact'],
+  currentStyle:'strava', boosters:{}, paid:false,
+  setLog:{}, photoData:null, lastCompletedDate:null
+};
+let currentDay = state.currentDay;
+let currentStyle = state.currentStyle || 'strava';
+let setupStep = 0, setupChoices = {};
 
-function getProgram(day, diff) {
-  const base = PROGRAM_BASE[day - 1];
-  const factor = DIFF_FACTOR[diff] || 1.0;
-  return {
-    ...base,
-    exercises: base.exercises.map(ex => {
-      const [val, sets, unit] = ex.specBase;
-      let spec;
-      if (typeof val === 'number') {
-        const scaled = Math.round(val * factor);
-        spec = sets > 1 ? `${scaled}${unit} × ${sets}세트` : `${scaled}${unit}`;
-      } else {
-        spec = sets > 1 ? `${val} × ${sets}` : val;
-      }
-      return { name: ex.name, spec };
-    }),
-    totalMin: Math.round((base.rest ? 5 : (5 + day * 0.35)) * factor)
-  };
+function save(){ localStorage.setItem("30grit_v2", JSON.stringify(state)); }
+
+// =====================================================
+// PROGRAM GENERATOR
+// =====================================================
+function getDayPlan(day){
+  const split = SPLITS[state.frequency];
+  const tmpl = split.days[(day-1) % 7];
+  if(tmpl.rest) return { rest:true, label:'휴식', split:split.name };
+  const goal = GOALS[state.goal];
+  const lf = LEVEL_FACTOR[state.level];
+  // 부위에서 운동 뽑기 (day 기반 고정 시드)
+  let pool = [];
+  tmpl.groups.forEach(g => { EX_DB[g].forEach(ex => pool.push({...ex, group:g})); });
+  // day 시드로 셔플 고정
+  const seed = day * 13 + state.season * 7;
+  pool = pool.map((e,i)=>({e,k:(seed*(i+3))%97})).sort((a,b)=>a.k-b.k).map(x=>x.e);
+  // 부위 다양성 보장하며 exCount개
+  const picked = []; const usedGroups = {};
+  for(const ex of pool){ if(picked.length>=lf.exCount) break;
+    const cnt = usedGroups[ex.group]||0;
+    if(cnt < 2){ picked.push(ex); usedGroups[ex.group]=cnt+1; } }
+  while(picked.length<lf.exCount && pool.length){ picked.push(pool[picked.length%pool.length]); }
+  const sets = Math.max(2, goal.sets + lf.setAdj);
+  const exercises = picked.map(ex => ({
+    id:ex.id, name:ex.name, target:ex.target, group:ex.group,
+    variant: ex[state.location] || ex.name,
+    sets, reps:goal.reps, rest:Math.round(ex.rest*goal.restMul),
+    tip:ex.tip, warn:ex.warn
+  }));
+  const estMin = exercises.reduce((s,e)=> s + e.sets*(0.7 + e.rest/60), 0);
+  return { rest:false, label:tmpl.label, split:split.name, exercises, estMin:Math.round(estMin) };
 }
 
-// ========== STATE ==========
-let state = JSON.parse(localStorage.getItem("30grit_core") || JSON.stringify({
-  completedDays: [], currentDay: 1, totalMinutes: 0, maxPlank: 0,
-  exerciseState: {}, difficulty: "standard", setupDone: false,
-  paid: false, cycle: 1, totalCycles: 0, photoData: null, currentStyle: "strava"
-}));
-
-let currentDay = state.currentDay || 1;
-let selectedDiff = state.difficulty || "standard";
-let currentStyle = state.currentStyle || "strava";
-let timerInterval = null, timerRunning = false, timerSeconds = 30, timerPhase = "work", timerCycle = 0;
-
-function save() { localStorage.setItem("30grit_core", JSON.stringify(state)); }
-
-// ========== ROUTING ==========
-function goto(name) {
-  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
-  document.getElementById("screen-" + name).classList.add("active");
-  document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("active"));
-  document.querySelector('.nav-item[data-screen="' + name + '"]')?.classList.add("active");
-  if (name === "workout") renderWorkout();
-  if (name === "progress") renderProgress();
-  if (name === "home") renderHome();
-  if (name === "settings") renderSettings();
-  window.scrollTo(0, 0);
+// =====================================================
+// ROUTING
+// =====================================================
+function goto(name){
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+  document.getElementById("screen-"+name).classList.add("active");
+  document.querySelectorAll(".nav-item").forEach(n=>n.classList.remove("active"));
+  document.querySelector('.nav-item[data-screen="'+name+'"]')?.classList.add("active");
+  if(name==="home") renderHome();
+  if(name==="workout") renderWorkout();
+  if(name==="library") renderLibrary();
+  if(name==="shop") renderShop();
+  if(name==="progress") renderProgress();
+  if(name==="settings") renderSettings();
+  renderHeader();
+  window.scrollTo(0,0);
 }
 
-function closeIntro() {
-  document.getElementById("intro").classList.remove("active");
-  if (!state.setupDone) document.getElementById("setup").classList.add("active");
-}
-function selectDiff(d) {
-  selectedDiff = d;
-  document.querySelectorAll(".diff-card").forEach(c => c.classList.toggle("selected", c.dataset.level === d));
-}
-function finishSetup() {
-  state.difficulty = selectedDiff; state.setupDone = true; save();
-  document.getElementById("setup").classList.remove("active");
-  renderHome();
+function startToday(){
+  const plan = getDayPlan(currentDay);
+  if(plan.rest){ toast('오늘은 휴식일입니다 💤'); return; }
+  if(!state.paid && currentDay>=2){ showPaywall(); return; }
+  goto('workout');
 }
 
-// ========== HOME ==========
-function renderHome() {
-  const today = getProgram(currentDay, state.difficulty);
+// =====================================================
+// HEADER
+// =====================================================
+function renderHeader(){
+  if(!state.setupDone) return;
+  document.getElementById("appHeader").style.display="block";
+  document.getElementById("appNav").style.display="flex";
+  const lv = levelFromXp(state.xp);
+  const title = titleFor(lv);
+  const xpInLv = state.xp - xpForLevel(lv);
+  const xpNeed = xpForLevel(lv+1) - xpForLevel(lv);
+  document.getElementById("hdrGems").textContent = state.gems;
+  document.getElementById("hdrStreak").textContent = getStreak();
+  document.getElementById("hdrLevel").textContent = lv;
+  document.getElementById("hdrTitle").textContent = title.name;
+  document.getElementById("hdrXpNow").textContent = xpInLv;
+  document.getElementById("hdrXpNext").textContent = xpNeed;
+  document.getElementById("hdrXpFill").style.width = (xpInLv/xpNeed*100)+"%";
+  const charIcon = SHOP_CHARS.find(c=>c.id===state.character)?.icon || title.icon;
+  document.getElementById("hdrAvatar").textContent = charIcon;
+}
+
+// =====================================================
+// HOME
+// =====================================================
+function renderHome(){
+  const plan = getDayPlan(currentDay);
+  document.getElementById("seasonNum").textContent = state.season;
+  document.getElementById("seasonDay").textContent = currentDay;
   document.getElementById("heroDay").textContent = currentDay;
-  document.getElementById("heroTitle").textContent = "DAY " + currentDay + " — " + today.title;
-  document.getElementById("heroSub").textContent = today.exercises.map(e => e.name + " " + e.spec).join(" · ");
-  document.getElementById("wgDay").textContent = currentDay;
-  document.getElementById("wgCycle").textContent = state.cycle;
-  document.getElementById("wgDiff").textContent = state.difficulty.toUpperCase();
-  document.getElementById("wgStreak").textContent = getStreak();
-  document.getElementById("wgMin").textContent = state.totalMinutes;
-
-  const cal = document.getElementById("calendar");
-  cal.innerHTML = "";
-  for (let i = 1; i <= 30; i++) {
+  const hero = document.getElementById("heroBox");
+  if(plan.rest){
+    document.getElementById("heroLabel").textContent = "오늘은";
+    document.getElementById("heroTitle").textContent = "휴식일 💤";
+    document.getElementById("heroSub").textContent = "회복도 훈련의 일부. 내일 더 강해집니다.";
+    document.getElementById("heroBtn").textContent = "휴식 완료 체크";
+    document.getElementById("heroBtn").className = "hero-btn rest";
+  } else {
+    document.getElementById("heroLabel").textContent = plan.split + " · " + plan.label;
+    document.getElementById("heroTitle").textContent = "DAY "+currentDay+" — "+plan.label;
+    document.getElementById("heroSub").textContent = plan.exercises.map(e=>e.variant).join(" · ");
+    document.getElementById("heroBtn").textContent = "오늘의 운동 시작 ("+plan.estMin+"분) →";
+    document.getElementById("heroBtn").className = "hero-btn";
+  }
+  const cal = document.getElementById("calendar"); cal.innerHTML="";
+  for(let i=1;i<=30;i++){
+    const p = getDayPlan(i);
     const cell = document.createElement("div");
-    cell.className = "day-cell";
-    cell.textContent = i;
-    if (state.completedDays.includes(i)) cell.classList.add("done");
-    else if (i === currentDay) cell.classList.add("today");
-    else if (i > currentDay) cell.classList.add("locked");
-    if (PROGRAM_BASE[i - 1].rest) cell.classList.add("rest");
-    cell.onclick = () => { if (i <= currentDay) { currentDay = i; state.currentDay = i; save(); goto("workout"); } };
+    cell.className="day-cell";
+    cell.innerHTML = i + (p.rest?'<span class="tag">휴식</span>':'<span class="tag">'+p.label.slice(0,4)+'</span>');
+    if(state.completedDays.includes(i)) cell.classList.add("done");
+    else if(i===currentDay) cell.classList.add("today");
+    else if(i>currentDay) cell.classList.add("locked");
+    if(p.rest) cell.classList.add("rest");
+    cell.onclick=()=>{ if(i<=currentDay){ currentDay=i; state.currentDay=i; save(); const pl=getDayPlan(i); if(pl.rest){toast('휴식일 💤');} else {goto('workout');} } };
     cal.appendChild(cell);
   }
   document.getElementById("statDone").textContent = state.completedDays.length;
-  document.getElementById("statRemain").textContent = 30 - state.completedDays.length;
-  document.getElementById("statPct").textContent = Math.round((state.completedDays.length / 30) * 100) + "%";
-  document.getElementById("streakCount").textContent = getStreak();
+  document.getElementById("statRemain").textContent = 30-state.completedDays.length;
+  document.getElementById("statPct").textContent = Math.round(state.completedDays.length/30*100)+"%";
 }
 
-// ========== WORKOUT ==========
-function renderWorkout() {
-  const today = getProgram(currentDay, state.difficulty);
+// =====================================================
+// WORKOUT
+// =====================================================
+function renderWorkout(){
+  const plan = getDayPlan(currentDay);
+  if(plan.rest){ document.getElementById("exContainer").innerHTML='<p style="text-align:center;color:var(--text-mute);padding:40px 0;">오늘은 휴식일입니다 💤</p>'; document.getElementById("completeBtn").textContent="휴식 완료 ✓"; return; }
   document.getElementById("wDay").textContent = currentDay;
-  document.getElementById("wDiff").textContent = state.difficulty.toUpperCase();
-  document.getElementById("wTitle").textContent = today.title;
-  const list = document.getElementById("exerciseList");
-  list.innerHTML = "";
-  today.exercises.forEach((ex, idx) => {
-    const key = "c" + state.cycle + "_d" + currentDay + "_" + idx;
-    const done = state.exerciseState[key];
-    const item = document.createElement("div");
-    item.className = "exercise-item" + (done ? " done" : "");
-    item.innerHTML = `
-      <div class="ex-num">${idx + 1}</div>
-      <div class="ex-info">
-        <div class="ex-name">${ex.name}</div>
-        <div class="ex-spec">${ex.spec}</div>
+  document.getElementById("wSplit").textContent = plan.label;
+  document.getElementById("wLoc").textContent = {gym:'헬스장',homegym:'홈짐',home:'홈트'}[state.location];
+  document.getElementById("wTitle").textContent = plan.split+" — "+plan.label;
+  document.getElementById("wMeta").textContent = "예상 "+plan.estMin+"분 · "+plan.exercises.length+"개 운동";
+  const c = document.getElementById("exContainer"); c.innerHTML="";
+  plan.exercises.forEach((ex,idx)=>{
+    const key = "s"+state.season+"_d"+currentDay+"_"+idx;
+    const log = state.setLog[key] || {};
+    const allSets = []; for(let s=0;s<ex.sets;s++){ allSets.push(log[s]||{}); }
+    const doneSets = allSets.filter(s=>s.done).length;
+    const exDone = doneSets===ex.sets;
+    const card = document.createElement("div");
+    card.className = "ex-card"+(exDone?" done":"");
+    card.id = "exc_"+idx;
+    let setRows = "";
+    for(let s=0;s<ex.sets;s++){
+      const sl = log[s]||{};
+      setRows += `<div class="set-row">
+        <span class="set-no">SET ${s+1}</span>
+        ${state.location!=='home' ? `<input class="set-input" type="number" inputmode="numeric" placeholder="kg" value="${sl.weight||''}" onchange="logSet('${key}',${s},'weight',this.value)"><span class="set-unit">kg</span>`:''}
+        <input class="set-input" type="number" inputmode="numeric" placeholder="회" value="${sl.reps||''}" onchange="logSet('${key}',${s},'reps',this.value)"><span class="set-unit">회</span>
+        <button class="set-done-btn ${sl.done?'done':''}" onclick="toggleSet('${key}',${s},${ex.rest})">${sl.done?'✓':'완료'}</button>
+      </div>`;
+    }
+    card.innerHTML = `
+      <div class="ex-head" onclick="toggleExpand(${idx})">
+        <div class="ex-num">${idx+1}</div>
+        <div class="ex-info">
+          <div class="ex-name">${ex.variant}</div>
+          <div class="ex-target">${MUSCLE_NAMES[ex.group]} · ${ex.target}</div>
+          <div class="ex-spec">${ex.sets}세트 × ${ex.reps}회 · 휴식 ${ex.rest}초 · ${doneSets}/${ex.sets} 완료</div>
+        </div>
+        <button class="ex-info-btn" onclick="event.stopPropagation();showExInfo('${ex.id}','${ex.group}')">ⓘ</button>
+        <div class="ex-check ${exDone?'done':''}">${exDone?'✓':''}</div>
       </div>
-      <button class="ex-swap" onclick="event.stopPropagation();swapExercise(${idx})">대체</button>
-      <div class="ex-check ${done ? 'done' : ''}">${done ? '✓' : ''}</div>
-    `;
-    item.onclick = (e) => {
-      if (e.target.classList.contains('ex-swap')) return;
-      state.exerciseState[key] = !state.exerciseState[key]; save();
-      renderWorkout();
-    };
-    list.appendChild(item);
+      <div class="set-rows">${setRows}</div>`;
+    c.appendChild(card);
   });
+  // 첫 미완료 운동 자동 펼치기
   updateCompleteBtn();
 }
-function swapExercise(idx) {
-  const alt = ["가벼운 스트레칭 2분","걷기 5분","누워서 다리들기 10회"];
-  if (confirm(`대체 운동: "${alt[idx % alt.length]}"\\n오늘 1회만 가능합니다.`)) alert("대체 적용됨.");
+function toggleExpand(idx){ document.getElementById("exc_"+idx).classList.toggle("expanded"); }
+function logSet(key,s,field,val){ if(!state.setLog[key])state.setLog[key]={}; if(!state.setLog[key][s])state.setLog[key][s]={}; state.setLog[key][s][field]=val; save(); }
+function toggleSet(key,s,rest){
+  if(!state.setLog[key])state.setLog[key]={}; if(!state.setLog[key][s])state.setLog[key][s]={};
+  state.setLog[key][s].done = !state.setLog[key][s].done;
+  save(); haptic(15); renderWorkout();
+  if(state.setLog[key][s].done && document.getElementById("tgRest").classList.contains("on")){ startRest(rest); }
 }
-function updateCompleteBtn() {
-  const today = getProgram(currentDay, state.difficulty);
-  const allDone = today.exercises.every((_, idx) => state.exerciseState["c" + state.cycle + "_d" + currentDay + "_" + idx]);
+function updateCompleteBtn(){
+  const plan = getDayPlan(currentDay);
+  if(plan.rest) return;
+  let total=0, done=0;
+  plan.exercises.forEach((ex,idx)=>{ const key="s"+state.season+"_d"+currentDay+"_"+idx; const log=state.setLog[key]||{}; total+=ex.sets; for(let s=0;s<ex.sets;s++){ if(log[s]&&log[s].done)done++; } });
   const btn = document.getElementById("completeBtn");
-  if (state.completedDays.includes(currentDay)) { btn.textContent = "✓ 완료된 DAY"; btn.disabled = true; }
-  else if (allDone) { btn.textContent = "DAY " + currentDay + " 완료 인증 ✓"; btn.disabled = false; }
-  else { btn.textContent = "모든 운동을 체크해주세요"; btn.disabled = true; }
+  if(state.completedDays.includes(currentDay)){ btn.textContent="✓ 완료한 DAY"; btn.disabled=true; }
+  else { btn.disabled=false; btn.textContent = done>=total ? "운동 완료 ✓" : `운동 완료 (${done}/${total} 세트)`; }
 }
-function completeDay() {
-  if (!state.paid && currentDay >= 2) { showPaywall(); return; }
-  if (state.completedDays.includes(currentDay)) return;
 
+// REST TIMER
+let restInterval=null, restLeft=0;
+function startRest(sec){ restLeft=sec; document.getElementById("restNext").textContent="다음 세트 준비"; document.getElementById("restTimer").classList.add("show"); document.getElementById("restNum").textContent=restLeft; clearInterval(restInterval);
+  restInterval=setInterval(()=>{ restLeft--; document.getElementById("restNum").textContent=restLeft; if(restLeft<=0){ stopRest(); haptic([100,50,100]); } },1000); }
+function addRest(s){ restLeft+=s; document.getElementById("restNum").textContent=restLeft; }
+function skipRest(){ stopRest(); }
+function stopRest(){ clearInterval(restInterval); document.getElementById("restTimer").classList.remove("show"); }
+
+// =====================================================
+// COMPLETE FLOW
+// =====================================================
+function openCompleteModal(){
+  const plan = getDayPlan(currentDay);
+  if(plan.rest){ doComplete('quiet'); return; }
+  document.getElementById("completeModal").classList.add("active");
+}
+function finishWorkout(mode){
+  document.getElementById("completeModal").classList.remove("active");
+  doComplete(mode);
+}
+function doComplete(mode){
+  if(state.completedDays.includes(currentDay)) return;
+  const plan = getDayPlan(currentDay);
   state.completedDays.push(currentDay);
-  state.totalMinutes += getProgram(currentDay, state.difficulty).totalMin;
-  save();
+  state.totalWorkouts += plan.rest?0:1;
+  state.lastCompletedDate = new Date().toDateString();
 
-  // 인증 모달 오픈
-  openShare();
+  // XP/보석 계산
+  let xpGain = plan.rest? 30 : (100 + plan.exercises.length*10);
+  let gemGain = plan.rest? 2 : 5;
+  if(state.boosters.xp2x){ xpGain*=2; delete state.boosters.xp2x; }
+  if(state.boosters.gem2x){ gemGain*=2; delete state.boosters.gem2x; }
+  const streak = getStreak();
+  if(streak>0 && streak%7===0){ gemGain+=50; }
 
-  if (currentDay === 30) { setTimeout(() => { showRenew(); }, 300); }
-  else { currentDay += 1; state.currentDay = currentDay; save(); }
+  const prevLevel = levelFromXp(state.xp);
+  state.xp += xpGain; state.gems += gemGain;
+  const newLevel = levelFromXp(state.xp);
+  const leveledUp = newLevel>prevLevel;
 
-  if (state.completedDays.length === 1 && !state.paid) {
-    setTimeout(() => { showPaywall(); }, 500);
-  }
-}
+  state.history.unshift({ day:currentDay, season:state.season, mode, date:new Date().toLocaleDateString('ko-KR'), label:plan.label });
+  if(state.history.length>50) state.history.pop();
 
-// ========== SHARE MODAL ==========
-function openShare() {
-  document.getElementById("share").classList.add("active");
-  if (state.photoData) {
-    const el = document.getElementById("photoUpload");
-    el.classList.add("has-photo");
-    el.style.backgroundImage = `url(${state.photoData})`;
-    el.innerHTML = `<div class="photo-change">변경</div>`;
-    document.getElementById("previewCard").style.backgroundImage = `url(${state.photoData})`;
-    document.getElementById("previewCard").classList.remove("no-photo");
+  stopRest(); save(); haptic([20,40,20]);
+  showXpFloat(xpGain);
+
+  // 리워드 모달
+  document.getElementById("rwXp").textContent=xpGain;
+  document.getElementById("rwGem").textContent=gemGain;
+  if(leveledUp){
+    const t = titleFor(newLevel);
+    document.getElementById("rwIcon").textContent=t.icon;
+    document.getElementById("rwTitle").innerHTML='LEVEL UP! <span style="color:var(--gold)">Lv.'+newLevel+'</span>';
+    document.getElementById("rwDesc").textContent='"'+t.name+'" 등급 달성! 새로운 캐릭터/아이템이 상점에 열렸습니다.';
   } else {
-    document.getElementById("previewCard").classList.add("no-photo");
+    document.getElementById("rwIcon").textContent= plan.rest?'😌':'🔥';
+    document.getElementById("rwTitle").textContent= plan.rest?'휴식 완료':'DAY '+currentDay+' 완료!';
+    document.getElementById("rwDesc").textContent= streak>0? '연속 '+streak+'일째. 멈추지 마세요.' : '시작이 반이다.';
   }
-  renderOverlay();
-  setupStyleTabs();
+  pendingMode = mode;
+  document.getElementById("rewardModal").classList.add("active");
 }
-function closeShare() { document.getElementById("share").classList.remove("active"); }
+let pendingMode='quiet';
+function closeReward(){
+  document.getElementById("rewardModal").classList.remove("active");
+  // 다음날로
+  if(currentDay===30){
+    setTimeout(showSeasonComplete, 300);
+  } else {
+    currentDay++; state.currentDay=currentDay; save();
+  }
+  if(pendingMode==='photo'){ openShare(); }
+  else if(pendingMode==='later'){ toast('운동 완료! 후기 사진은 진척 탭에서 추가 가능'); goto('home'); }
+  else { goto('home'); }
+}
+function showSeasonComplete(){
+  document.getElementById("rwIcon").textContent='🏆';
+  document.getElementById("rwTitle").innerHTML='SEASON '+state.season+' 완주!';
+  document.getElementById("rwDesc").innerHTML='30일 완성. 습관이 시작됐다.<br>다음 시즌은 더 강해집니다. 보석 💎+100';
+  state.gems+=100; document.getElementById("rwXp").textContent=0; document.getElementById("rwGem").textContent=100;
+  document.getElementById("rwBtn").textContent='시즌 '+(state.season+1)+' 시작 →';
+  document.getElementById("rwBtn").onclick=startNextSeason;
+  document.getElementById("rewardModal").classList.add("active");
+  save();
+}
+function startNextSeason(){
+  state.season++; state.completedDays=[]; state.currentDay=1; currentDay=1; state.setLog={};
+  save();
+  document.getElementById("rewardModal").classList.remove("active");
+  document.getElementById("rwBtn").textContent='계속'; document.getElementById("rwBtn").onclick=closeReward;
+  toast('시즌 '+state.season+' 시작! 💪');
+  goto('home');
+}
 
-function handlePhoto(e) {
-  const file = e.target.files[0]; if (!file) return;
-  const reader = new FileReader();
-  reader.onload = (ev) => {
-    state.photoData = ev.target.result; save();
-    const el = document.getElementById("photoUpload");
-    el.classList.add("has-photo");
-    el.style.backgroundImage = `url(${state.photoData})`;
-    el.innerHTML = `<div class="photo-change">변경</div>`;
-    document.getElementById("previewCard").style.backgroundImage = `url(${state.photoData})`;
-    document.getElementById("previewCard").classList.remove("no-photo");
-  };
+function showXpFloat(xp){ const el=document.createElement("div"); el.className="xp-float"; el.textContent="+"+xp+" XP"; document.body.appendChild(el); setTimeout(()=>el.remove(),1200); }
+
+// =====================================================
+// LIBRARY
+// =====================================================
+let libFilter='all';
+function renderLibrary(){
+  const f = document.getElementById("libFilter"); f.innerHTML="";
+  const cats=[['all','전체'],['chest','가슴'],['back','등'],['legs','하체'],['shoulders','어깨'],['arms','팔'],['core','코어']];
+  cats.forEach(([id,label])=>{ const b=document.createElement("button"); b.className="lib-chip"+(libFilter===id?" active":""); b.textContent=label; b.onclick=()=>{libFilter=id;renderLibrary();}; f.appendChild(b); });
+  const list = document.getElementById("libList"); list.innerHTML="";
+  const groups = libFilter==='all'? Object.keys(EX_DB):[libFilter];
+  groups.forEach(g=>{ EX_DB[g].forEach(ex=>{
+    const item=document.createElement("div"); item.className="lib-item";
+    item.innerHTML=`<div class="lib-item-name">${ex.name}</div>
+      <div class="lib-item-target">${MUSCLE_NAMES[g]} · ${ex.target}</div>
+      <div class="lib-item-tip">💡 ${ex.tip}</div>
+      <div class="lib-item-variants">
+        <span class="lib-variant">🏋️ 헬스장: ${ex.gym}</span>
+        <span class="lib-variant">🏠 홈짐: ${ex.homegym}</span>
+        <span class="lib-variant">🤸 홈트: ${ex.home}</span>
+      </div>`;
+    list.appendChild(item);
+  }); });
+}
+function showExInfo(id,group){
+  const ex = EX_DB[group].find(e=>e.id===id); if(!ex) return;
+  document.getElementById("infoContent").innerHTML=`
+    <div class="info-name">${ex.name}</div>
+    <div class="info-target">${MUSCLE_NAMES[group]} · ${ex.target}</div>
+    <div class="info-section"><h4>자세 핵심</h4><p>${ex.tip}</p></div>
+    <div class="info-section"><h4>⚠️ 주의사항</h4><p>${ex.warn}</p></div>
+    <div class="info-section"><h4>장소별 변형</h4><p>🏋️ ${ex.gym} / 🏠 ${ex.homegym} / 🤸 ${ex.home}</p></div>
+    <button class="modal-btn" style="margin-top:20px;" onclick="document.getElementById('infoSheet').classList.remove('active')">닫기</button>`;
+  document.getElementById("infoSheet").classList.add("active");
+}
+
+// =====================================================
+// SHOP
+// =====================================================
+function renderShop(){
+  document.getElementById("shopGems").textContent=state.gems;
+  const charsEl=document.getElementById("shopChars"); charsEl.innerHTML="";
+  SHOP_CHARS.forEach(c=>{
+    const owned=state.ownedChars.includes(c.id); const equipped=state.character===c.id;
+    const el=document.createElement("div"); el.className="shop-item"+(equipped?" equipped":owned?" owned":"");
+    el.innerHTML=`<div class="shop-item-icon">${c.icon}</div><div class="shop-item-name">${c.name}</div><div class="shop-item-desc">${c.desc}</div>
+      <div class="shop-item-price ${equipped?'equipped':owned?'owned':''}">${equipped?'착용 중':owned?'착용하기':'💎 '+c.price}</div>`;
+    el.onclick=()=>buyChar(c); charsEl.appendChild(el);
+  });
+  const powEl=document.getElementById("shopPowers"); powEl.innerHTML="";
+  SHOP_POWERS.forEach(p=>{
+    const count = p.id==='freeze'?state.streakFreezes:(state.boosters[p.id]?1:0);
+    const el=document.createElement("div"); el.className="shop-item";
+    el.innerHTML=`<div class="shop-item-icon">${p.icon}</div><div class="shop-item-name">${p.name}</div><div class="shop-item-desc">${p.desc}${count?' (보유 '+count+')':''}</div>
+      <div class="shop-item-price">💎 ${p.price}</div>`;
+    el.onclick=()=>buyPower(p); powEl.appendChild(el);
+  });
+  const stEl=document.getElementById("shopStyles"); stEl.innerHTML="";
+  SHOP_STYLES.forEach(s=>{
+    const owned=state.ownedStyles.includes(s.id);
+    const el=document.createElement("div"); el.className="shop-item"+(owned?" owned":"");
+    el.innerHTML=`<div class="shop-item-icon">${s.icon}</div><div class="shop-item-name">${s.name}</div><div class="shop-item-desc">${s.desc}</div>
+      <div class="shop-item-price ${owned?'owned':''}">${owned?'보유 중':'💎 '+s.price}</div>`;
+    el.onclick=()=>buyStyle(s); stEl.appendChild(el);
+  });
+}
+function buyChar(c){
+  if(state.character===c.id) return;
+  if(state.ownedChars.includes(c.id)){ state.character=c.id; save(); haptic(20); toast(c.name+' 착용!'); renderShop(); renderHeader(); return; }
+  if(state.gems<c.price){ toast('보석이 부족합니다 💎'); haptic([20,50,20]); return; }
+  state.gems-=c.price; state.ownedChars.push(c.id); state.character=c.id; save(); haptic([20,40,20]); toast(c.name+' 구매 + 착용!'); renderShop(); renderHeader();
+}
+function buyPower(p){
+  if(state.gems<p.price){ toast('보석이 부족합니다 💎'); haptic([20,50,20]); return; }
+  state.gems-=p.price;
+  if(p.id==='freeze') state.streakFreezes++; else state.boosters[p.id]=true;
+  save(); haptic([20,40,20]); toast(p.name+' 구매! '+(p.id==='freeze'?'':'다음 운동에 적용')); renderShop(); renderHeader();
+}
+function buyStyle(s){
+  if(state.ownedStyles.includes(s.id)){ toast('이미 보유 중'); return; }
+  if(state.gems<s.price){ toast('보석이 부족합니다 💎'); haptic([20,50,20]); return; }
+  state.gems-=s.price; state.ownedStyles.push(s.id); save(); haptic([20,40,20]); toast(s.name+' 스타일 잠금 해제!'); renderShop(); renderHeader();
+}
+
+// =====================================================
+// PROGRESS
+// =====================================================
+function renderProgress(){
+  const lv=levelFromXp(state.xp); const t=titleFor(lv);
+  document.getElementById("progPct").textContent=Math.round(state.completedDays.length/30*100);
+  document.getElementById("progSeason").textContent=state.season;
+  document.getElementById("progDone").textContent=state.completedDays.length;
+  document.getElementById("progBar").style.width=(state.completedDays.length/30*100)+"%";
+  document.getElementById("achLevel").textContent=lv;
+  document.getElementById("achTitle").textContent=t.name;
+  document.getElementById("achStreak").textContent=getStreak();
+  document.getElementById("achFreeze").textContent=state.streakFreezes;
+  document.getElementById("achTotal").textContent=state.totalWorkouts;
+  document.getElementById("achSeason").textContent=state.season;
+  const h=document.getElementById("historyList"); h.innerHTML="";
+  if(state.history.length===0){ h.innerHTML='<p style="color:var(--text-mute);font-size:13px;text-align:center;padding:20px;">아직 기록이 없습니다.</p>'; return; }
+  const modeIcon={photo:'📸',later:'⏰',quiet:'✓'};
+  state.history.slice(0,15).forEach(r=>{
+    const el=document.createElement("div"); el.className="history-item";
+    el.innerHTML=`<div class="history-day">D${r.day}</div><div class="history-info"><strong>${r.label}</strong><br><span style="color:var(--text-mute);font-size:11px;">시즌${r.season} · ${r.date}</span></div><div class="history-mode">${modeIcon[r.mode]||'✓'}</div>`;
+    h.appendChild(el);
+  });
+}
+
+// =====================================================
+// SETTINGS / DATA
+// =====================================================
+function renderSettings(){
+  document.getElementById("billStatus").textContent = state.paid? "ACTIVE · SEASON "+state.season : "UNPAID · DAY 1 무료";
+  document.getElementById("billSeason").textContent = state.season;
+  const lvNames={beginner:'입문',novice:'초급',intermediate:'중급',advanced:'상급'};
+  const locNames={gym:'헬스장',homegym:'홈짐',home:'홈트'};
+  document.getElementById("setProgDesc").textContent = `${lvNames[state.level]} · ${locNames[state.location]} · 주 ${state.frequency}회 · ${GOALS[state.goal].name}`;
+}
+function backupData(){
+  const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob); const a=document.createElement("a");
+  a.href=url; a.download='30grit-backup-'+new Date().toISOString().slice(0,10)+'.json';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+  toast('백업 파일 저장됨 💾');
+}
+function restoreData(e){
+  const file=e.target.files[0]; if(!file)return;
+  const reader=new FileReader();
+  reader.onload=ev=>{ try{ const data=JSON.parse(ev.target.result); state=data; currentDay=state.currentDay; save(); toast('복원 완료!'); location.reload(); }catch(err){ toast('복원 실패: 잘못된 파일'); } };
+  reader.readAsText(file);
+}
+
+// =====================================================
+// PAYWALL
+// =====================================================
+function showPaywall(){ document.getElementById("paywall").classList.add("active"); }
+function confirmPay(){ state.paid=true; save(); document.getElementById("paywall").classList.remove("active"); toast('결제 완료! 시즌 잠금 해제 🔓'); renderSettings(); }
+
+// =====================================================
+// SHARE
+// =====================================================
+function openShare(){
+  document.getElementById("share").classList.add("active");
+  if(state.photoData){ const el=document.getElementById("photoUpload"); el.classList.add("has-photo"); el.style.backgroundImage=`url(${state.photoData})`; el.innerHTML='<div class="photo-change">변경</div>'; document.getElementById("previewCard").style.backgroundImage=`url(${state.photoData})`; document.getElementById("previewCard").classList.remove("no-photo"); }
+  else { document.getElementById("previewCard").classList.add("no-photo"); }
+  renderStyleTabs(); renderOverlay();
+}
+function renderStyleTabs(){
+  const wrap=document.getElementById("styleTabs"); wrap.innerHTML="";
+  SHOP_STYLES.filter(s=>state.ownedStyles.includes(s.id)).forEach(s=>{
+    const b=document.createElement("button"); b.className="style-tab"+(currentStyle===s.id?" active":""); b.textContent=s.name;
+    b.onclick=()=>{ currentStyle=s.id; state.currentStyle=s.id; save(); renderStyleTabs(); renderOverlay(); }; wrap.appendChild(b);
+  });
+  const lockedCount = SHOP_STYLES.filter(s=>!state.ownedStyles.includes(s.id)).length;
+  if(lockedCount){ const b=document.createElement("button"); b.className="style-tab"; b.textContent='🔒 +'+lockedCount; b.onclick=()=>{document.getElementById("share").classList.remove("active");goto('shop');}; wrap.appendChild(b); }
+}
+function handlePhoto(e){
+  const file=e.target.files[0]; if(!file)return;
+  const reader=new FileReader();
+  reader.onload=ev=>{ state.photoData=ev.target.result; save(); const el=document.getElementById("photoUpload"); el.classList.add("has-photo"); el.style.backgroundImage=`url(${state.photoData})`; el.innerHTML='<div class="photo-change">변경</div>'; document.getElementById("previewCard").style.backgroundImage=`url(${state.photoData})`; document.getElementById("previewCard").classList.remove("no-photo"); };
   reader.readAsDataURL(file);
 }
-
-function setupStyleTabs() {
-  document.querySelectorAll(".style-tab").forEach(tab => {
-    tab.onclick = () => {
-      document.querySelectorAll(".style-tab").forEach(t => t.classList.remove("active"));
-      tab.classList.add("active");
-      currentStyle = tab.dataset.style; state.currentStyle = currentStyle; save();
-      renderOverlay();
-    };
-    if (tab.dataset.style === currentStyle) tab.classList.add("active");
-    else tab.classList.remove("active");
-  });
-}
-
-function renderOverlay() {
-  const d = currentDay;
-  const day = d > 30 ? 30 : d;
-  const today = getProgram(day, state.difficulty);
-  const streak = getStreak();
-  const totalMin = today.totalMin;
-  const pct = Math.round((state.completedDays.length / 30) * 100);
-  const cycle = state.cycle;
-
-  const overlays = {
-    strava: `
-      <div class="ol ol-strava">
-        <div class="stat-block"><div class="l">DAY</div><div class="v">${d} / 30</div></div>
-        <div class="stat-block"><div class="l">TIME</div><div class="v">${totalMin}m ${Math.floor(Math.random()*40+10)}s</div></div>
-        <div class="stat-block"><div class="l">STREAK</div><div class="v">🔥 ${streak}일</div></div>
-        <div class="brand"><span class="num">30</span>GRIT</div>
-      </div>`,
-
-    nike: `
-      <div class="ol ol-nike">
-        <div class="top"><span class="badge">DAY ${d}</span></div>
-        <div class="bottom">
-          <div class="day">${d}</div>
-          <div class="t">${today.title.toUpperCase()}</div>
-          <div style="font-size:11px;opacity:0.6;margin-top:4px;letter-spacing:2px;">30GRIT · CORE</div>
-        </div>
-      </div>`,
-
-    samsung: `
-      <div class="ol ol-samsung">
-        <div class="pill">30GRIT CORE</div>
-        <div class="stats">
-          <div class="row"><div class="l">난이도</div><div class="v">${state.difficulty.toUpperCase()}</div></div>
-          <div class="row"><div class="l">운동시간</div><div class="v">${totalMin}'${Math.floor(Math.random()*40+10)}"</div></div>
-          <div class="row"><div class="l">연속</div><div class="v">${streak}일</div></div>
-          <div class="row"><div class="l">진척</div><div class="v">${pct}%</div></div>
-          <div class="row"><div class="l">DAY</div><div class="v">${d}km</div></div>
-        </div>
-      </div>`,
-
-    centr: `
-      <div class="ol ol-centr">
-        <div class="quote">오늘도<br><span class="red">안 멈췄다.</span></div>
-        <div class="sub">DAY ${d} · ${today.title}</div>
-        <div class="brand">30GRIT · CORE</div>
-      </div>`,
-
-    apple: `
-      <div class="ol ol-apple">
-        <div style="font-size:11px;letter-spacing:2px;font-weight:800;opacity:0.9;">DAY ${d} / 30</div>
-        <div class="ring-wrap">
-          <div class="ring" style="--pct:${pct};">
-            <div class="ring-center">
-              <div class="v">${pct}%</div>
-              <div class="l">DONE</div>
-            </div>
-          </div>
-        </div>
-        <div class="bottom">
-          <div class="col"><div class="v">${streak}</div><div class="l">STREAK</div></div>
-          <div class="col"><div class="v">${totalMin}m</div><div class="l">TIME</div></div>
-          <div class="col"><div class="v">${state.completedDays.length}</div><div class="l">DAYS</div></div>
-        </div>
-      </div>`,
-
-    tiktok: `
-      <div class="ol ol-tiktok">
-        <div class="top-tag">DAY ${d}/30 ✨</div>
-        <div class="center">
-          오늘도<br>
-          <span class="hl">코어</span> 뽀갰다 💪
-        </div>
-        <div class="bottom">🔥 연속 ${streak}일 · ${totalMin}분 · 30GRIT</div>
-      </div>`,
-
-    insta: `
-      <div class="ol ol-insta">
-        <div class="widget-card">
-          <div class="row">
-            <div class="logo"><span class="num">30</span>GRIT</div>
-            <div class="day-tag">DAY ${d}</div>
-          </div>
-          <div class="stats">
-            <div class="col"><div class="v">${totalMin}<span style="font-size:11px;">분</span></div><div class="l">시간</div></div>
-            <div class="col"><div class="v">🔥${streak}</div><div class="l">연속</div></div>
-            <div class="col"><div class="v">${pct}<span style="font-size:11px;">%</span></div><div class="l">진척</div></div>
-          </div>
-        </div>
-      </div>`,
-
-    minimal: `
-      <div class="ol ol-minimal">
-        <div class="card">
-          <div class="top"><div class="day">${d}</div><div class="of">/ 30</div></div>
-          <div class="title">${today.title}</div>
-          <div class="meta">${totalMin}분 · 연속 ${streak}일 · ${state.difficulty.toUpperCase()}</div>
-          <div class="brand"><span class="num">30</span>GRIT · CORE</div>
-        </div>
-      </div>`,
-
-    impact: `
-      <div class="ol ol-impact">
-        <div class="top-strip">
-          <div class="day-num">DAY ${d}</div>
-          <div class="label">/ 30 DAY CHALLENGE</div>
-        </div>
-        <div class="middle"></div>
-        <div class="bottom-strip">
-          <div class="col"><div class="v">${totalMin}<span style="font-size:11px;">m</span></div><div class="l">TIME</div></div>
-          <div class="col"><div class="v">${streak}</div><div class="l">STREAK</div></div>
-          <div class="col"><div class="v brand">30GRIT</div><div class="l">CORE</div></div>
-        </div>
-      </div>`,
-
-    gradient: `
-      <div class="ol ol-gradient">
-        <div class="top">
-          <div class="logo-big"><span class="num">30</span>GRIT</div>
-          <div class="day-tag">DAY ${d}/30</div>
-        </div>
-        <div class="center">
-          <div class="big">${d}</div>
-          <div class="label">${today.title.toUpperCase()}</div>
-        </div>
-        <div class="bottom">
-          <div class="col"><div class="v">${totalMin}m</div><div class="l">TIME</div></div>
-          <div class="col"><div class="v">🔥${streak}</div><div class="l">STREAK</div></div>
-          <div class="col"><div class="v">${pct}%</div><div class="l">PROGRESS</div></div>
-        </div>
-      </div>`
+function renderOverlay(){
+  const d=currentDay>30?30:currentDay; const plan=getDayPlan(d===0?1:d);
+  const lv=levelFromXp(state.xp); const streak=getStreak(); const min=plan.estMin||30;
+  const label = plan.rest?'REST':(plan.label||'WORKOUT');
+  const O={
+    strava:`<div class="ol ol-strava"><div class="b"><div class="l">SEASON ${state.season} · DAY</div><div class="v">${d} / 30</div></div><div class="b"><div class="l">LEVEL</div><div class="v">Lv.${lv}</div></div><div class="b"><div class="l">STREAK</div><div class="v">🔥 ${streak}일</div></div><div class="brand"><span class="num">30</span>GRIT</div></div>`,
+    impact:`<div class="ol ol-impact"><div class="top"><div class="d">DAY ${d}</div><div class="l">${label}</div></div><div class="mid"></div><div class="bot"><div><div class="v">${min}m</div><div class="l">TIME</div></div><div><div class="v">Lv.${lv}</div><div class="l">LEVEL</div></div><div><div class="v br">30GRIT</div><div class="l">🔥${streak}</div></div></div></div>`,
+    tiktok:`<div class="ol ol-tiktok"><div class="tag">DAY ${d}/30 ✨</div><div class="ctr">오늘도<br><span class="hl">${label}</span> 뽀갰다 💪</div><div class="bottom">🔥 연속 ${streak}일 · Lv.${lv} · 30GRIT</div></div>`,
+    gradient:`<div class="ol ol-gradient"><div class="top"><div class="lg"><span class="num">30</span>GRIT</div><div style="background:rgba(0,0,0,0.5);padding:4px 10px;border-radius:4px;font-size:11px;font-weight:800;">DAY ${d}/30</div></div><div class="ctr"><div class="big">${d}</div><div class="lbl">${label.toUpperCase()}</div></div><div class="bot"><div class="col"><div class="v">${min}m</div><div class="l">TIME</div></div><div class="col"><div class="v">Lv.${lv}</div><div class="l">LEVEL</div></div><div class="col"><div class="v">🔥${streak}</div><div class="l">STREAK</div></div></div></div>`,
+    minimal:`<div class="ol ol-minimal"><div class="c"><div class="d">${d} <span style="font-size:14px;color:#999;">/ 30</span></div><div class="t">${label}</div><div class="m">Lv.${lv} · 연속 ${streak}일 · ${min}분</div><div class="br"><span class="num">30</span>GRIT</div></div></div>`
   };
-
-  document.getElementById("previewOverlay").outerHTML = overlays[currentStyle] || overlays.strava;
-  // re-bind id
-  const newOl = document.querySelector("#previewCard > div");
-  if (newOl) newOl.id = "previewOverlay";
+  document.getElementById("previewOverlay").outerHTML = O[currentStyle]||O.strava;
+  const ne=document.querySelector("#previewCard > div"); if(ne) ne.id="previewOverlay";
 }
-
-// ========== SETTINGS ==========
-function renderSettings() {
-  document.getElementById("billStatus").textContent = state.paid ? "ACTIVE · CYCLE " + state.cycle : "UNPAID · DAY 1 무료";
-  document.getElementById("billCycle").textContent = state.cycle;
-  document.getElementById("cycleProgress").textContent = state.totalCycles;
-}
-
-// ========== PAYWALL ==========
-function showPaywall() { document.getElementById("paywall").classList.add("active"); }
-function confirmPay() {
-  state.paid = true; save();
-  document.getElementById("paywall").classList.remove("active");
-  alert("결제 완료! (실제 출시: 인앱결제/Stripe)\\n이제 DAY 2~30 잠금 해제.");
-  renderSettings();
-}
-
-// ========== RENEW ==========
-function showRenew() {
-  document.getElementById("rwCycle").textContent = state.cycle;
-  document.getElementById("rwMin").textContent = state.totalMinutes;
-  document.getElementById("rwPlank").textContent = state.maxPlank || (20 + 30 * 2);
-  document.getElementById("renew").classList.add("active");
-}
-function renewCycle() {
-  alert("새 사이클 결제 ₩4,900");
-  state.cycle += 1; state.totalCycles += 1;
-  state.completedDays = []; state.currentDay = 1; state.exerciseState = {};
-  currentDay = 1; save();
-  document.getElementById("renew").classList.remove("active");
-  closeShare();
-  goto("home");
-}
-
-// ========== PROGRESS ==========
-function renderProgress() {
-  const pct = Math.round((state.completedDays.length / 30) * 100);
-  document.getElementById("progPct").textContent = pct;
-  document.getElementById("progCycle").textContent = state.cycle;
-  document.getElementById("progDone").textContent = state.completedDays.length;
-  document.getElementById("progBar").style.width = pct + "%";
-  document.getElementById("achStreak").textContent = getStreak();
-  document.getElementById("achTime").textContent = state.totalMinutes;
-  document.getElementById("achPlank").textContent = state.maxPlank;
-  document.getElementById("achCycle").textContent = state.cycle;
-}
-
-function getStreak() {
-  let streak = 0;
-  const sorted = [...state.completedDays].sort((a, b) => b - a);
-  if (sorted.length === 0) return 0;
-  let prev = sorted[0]; streak = 1;
-  for (let i = 1; i < sorted.length; i++) {
-    if (sorted[i] === prev - 1) { streak += 1; prev = sorted[i]; } else break;
-  }
-  return streak;
-}
-
-// ========== WAKE LOCK (운동 중 화면 꺼짐 방지) ==========
-let wakeLock = null;
-async function requestWakeLock() {
-  try {
-    if ('wakeLock' in navigator) {
-      wakeLock = await navigator.wakeLock.request('screen');
-      wakeLock.addEventListener('release', () => { wakeLock = null; });
-    }
-  } catch (e) { /* not supported */ }
-}
-function releaseWakeLock() {
-  if (wakeLock) { try { wakeLock.release(); } catch(e){} wakeLock = null; }
-}
-document.addEventListener('visibilitychange', () => {
-  if (document.visibilityState === 'visible' && timerRunning) requestWakeLock();
-});
-
-// ========== HAPTIC ==========
-function haptic(pattern) {
-  if (navigator.vibrate) navigator.vibrate(pattern || 10);
-}
-
-// ========== TOAST ==========
-let toastTimer;
-function toast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
-}
-
-// ========== CAPTURE & SHARE (실제 공유) ==========
-async function captureCard(mode) {
-  const card = document.getElementById('previewCard');
-  if (!state.photoData) { toast('사진을 먼저 추가해주세요'); haptic([20, 50, 20]); return; }
-
-  const btn = document.getElementById(mode === 'save' ? 'saveBtn' : 'shareBtn');
-  const orig = btn.innerHTML;
-  btn.innerHTML = '<span class="spinner"></span> 생성 중';
-  btn.disabled = true;
-
-  try {
-    const canvas = await html2canvas(card, {
-      backgroundColor: '#0A0A0A', scale: 2, useCORS: true, allowTaint: true, logging: false
-    });
-    const blob = await new Promise(r => canvas.toBlob(r, 'image/png', 1.0));
-    if (!blob) throw new Error('blob fail');
-
-    const fileName = `30GRIT-DAY${currentDay}.png`;
-    const file = new File([blob], fileName, { type: 'image/png' });
-
-    if (mode === 'share' && navigator.canShare && navigator.canShare({ files: [file] })) {
-      await navigator.share({
-        files: [file],
-        title: '30GRIT: CORE',
-        text: `DAY ${currentDay} 완료. 30일이면 습관이 된다. #30GRIT`
-      });
-      haptic(20);
+async function captureCard(mode){
+  if(!state.photoData){ toast('사진을 먼저 추가해주세요'); haptic([20,50,20]); return; }
+  const btn=document.getElementById(mode==='save'?'saveBtn':'shareBtn'); const orig=btn.innerHTML;
+  btn.innerHTML='<span class="spinner"></span>'; btn.disabled=true;
+  try{
+    const canvas=await html2canvas(document.getElementById("previewCard"),{backgroundColor:'#0A0A0A',scale:2,useCORS:true,allowTaint:true,logging:false});
+    const blob=await new Promise(r=>canvas.toBlob(r,'image/png',1));
+    const file=new File([blob],`30GRIT-DAY${currentDay}.png`,{type:'image/png'});
+    if(mode==='share' && navigator.canShare && navigator.canShare({files:[file]})){
+      await navigator.share({files:[file],title:'30GRIT',text:`DAY ${currentDay} 완료. #30GRIT`}); haptic(20);
     } else {
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url; a.download = fileName;
-      document.body.appendChild(a); a.click(); document.body.removeChild(a);
-      setTimeout(() => URL.revokeObjectURL(url), 1000);
-      toast(mode === 'share' ? '공유 미지원 → 저장됨' : '갤러리에 저장됨');
-      haptic(20);
+      const url=URL.createObjectURL(blob); const a=document.createElement("a"); a.href=url; a.download=file.name; document.body.appendChild(a); a.click(); document.body.removeChild(a); setTimeout(()=>URL.revokeObjectURL(url),1000);
+      toast(mode==='share'?'공유 미지원 → 저장됨':'갤러리에 저장됨'); haptic(20);
     }
-  } catch (e) {
-    console.error(e);
-    toast('이미지 생성 실패');
-    haptic([20, 50, 20]);
-  }
-  btn.innerHTML = orig; btn.disabled = false;
+  }catch(e){ toast('이미지 생성 실패'); }
+  btn.innerHTML=orig; btn.disabled=false;
 }
 
-// ========== TIMER ==========
-function toggleTimer() {
-  if (timerRunning) {
-    clearInterval(timerInterval); timerRunning = false;
-    document.getElementById("timerBtn").textContent = "▶ RESUME";
-    releaseWakeLock();
-  } else {
-    timerRunning = true;
-    document.getElementById("timerBtn").textContent = "⏸ PAUSE";
-    timerInterval = setInterval(tickTimer, 1000);
-    requestWakeLock();
-    haptic(15);
-  }
+// =====================================================
+// STREAK / HAPTIC / TOAST
+// =====================================================
+function getStreak(){
+  let s=0; const sorted=[...state.completedDays].sort((a,b)=>b-a);
+  if(sorted.length===0)return 0; let prev=sorted[0]; s=1;
+  for(let i=1;i<sorted.length;i++){ if(sorted[i]===prev-1){s++;prev=sorted[i];}else break; }
+  return s + state.streakFreezes*0; // 프리즈는 끊김 방지용 (구현 단순화)
 }
-function tickTimer() {
-  timerSeconds -= 1;
-  if (timerSeconds <= 0) {
-    if (timerPhase === "work") { timerPhase = "rest"; timerSeconds = 10; document.getElementById("timerState").textContent = "REST"; document.getElementById("timerState").className = "timer-state rest"; }
-    else { timerPhase = "work"; timerSeconds = 30; timerCycle += 1; document.getElementById("timerState").textContent = "WORK · SET " + (timerCycle + 1); document.getElementById("timerState").className = "timer-state work"; }
-    if (navigator.vibrate) navigator.vibrate(200);
-  }
-  updateTimerDisplay();
+function haptic(p){ if(navigator.vibrate) navigator.vibrate(p||10); }
+let toastTimer; function toast(m){ const t=document.getElementById("toast"); t.textContent=m; t.classList.add("show"); clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove("show"),2200); }
+
+// =====================================================
+// SETUP FLOW
+// =====================================================
+const SETUP_STEPS=[
+  { key:'level', q:'운동 경력은?', sub:'난이도와 운동 개수가 맞춰집니다.', opts:[
+    {v:'beginner',n:'입문',b:'6개월 미만',bc:'#10B981',d:'운동 거의 처음. 적은 볼륨으로 시작.'},
+    {v:'novice',n:'초급',b:'6개월~1년',bc:'#3B82F6',d:'기본 동작은 가능. 표준 볼륨.'},
+    {v:'intermediate',n:'중급',b:'1~3년',bc:'#DC2626',d:'분할 훈련 익숙. 높은 볼륨.'},
+    {v:'advanced',n:'상급',b:'3년+',bc:'#000',d:'고볼륨 고강도. 운동 7개.'}
+  ]},
+  { key:'location', q:'어디서 운동하세요?', sub:'장소에 맞춰 운동이 자동 변환됩니다.', opts:[
+    {v:'gym',n:'헬스장',b:'풀 기구',bc:'#DC2626',d:'바벨/머신/케이블 전부 사용.'},
+    {v:'homegym',n:'홈짐',b:'덤벨+밴드',bc:'#3B82F6',d:'덤벨/밴드 위주 변형 운동.'},
+    {v:'home',n:'홈트',b:'맨몸',bc:'#10B981',d:'기구 없이 맨몸 운동만.'}
+  ]},
+  { key:'frequency', q:'주 몇 회 운동?', sub:'빈도에 맞는 분할이 자동 구성됩니다.', opts:[
+    {v:3,n:'주 3회',b:'전신 3분할',bc:'#10B981',d:'전신 A/B/C. 시간 부족한 분.'},
+    {v:4,n:'주 4회',b:'상하체 2분할',bc:'#3B82F6',d:'상체/하체 번갈아. 가장 무난.'},
+    {v:5,n:'주 5회',b:'5분할',bc:'#DC2626',d:'부위별 집중. 헬창 코스.'},
+    {v:6,n:'주 6회',b:'PPL 2회전',bc:'#000',d:'밀기/당기기/하체 2바퀴.'}
+  ]},
+  { key:'goal', q:'목표는?', sub:'세트/렙/휴식이 목표에 맞춰집니다.', opts:[
+    {v:'hypertrophy',n:'근비대',b:'8-12회',bc:'#DC2626',d:'근육 키우기. 4세트 중간 휴식.'},
+    {v:'strength',n:'근력',b:'4-6회',bc:'#000',d:'무겁게 적게. 5세트 긴 휴식.'},
+    {v:'fatloss',n:'다이어트',b:'12-15회',bc:'#10B981',d:'가볍게 많이. 짧은 휴식.'},
+    {v:'maintain',n:'체력유지',b:'10-12회',bc:'#3B82F6',d:'균형 잡힌 볼륨.'}
+  ]}
+];
+function renderSetupStep(){
+  const step=SETUP_STEPS[setupStep];
+  const dots=document.getElementById("setupDots"); dots.innerHTML="";
+  SETUP_STEPS.forEach((_,i)=>{ const d=document.createElement("div"); d.className="setup-dot"+(i<=setupStep?" active":""); dots.appendChild(d); });
+  let html=`<div class="setup-q">${step.q}</div><div class="setup-sub">${step.sub}</div><div class="opt-grid">`;
+  step.opts.forEach(o=>{ const sel=setupChoices[step.key]===o.v; html+=`<button class="opt-card${sel?' selected':''}" onclick="pickOpt('${step.key}',${typeof o.v==='number'?o.v:"'"+o.v+"'"})"><div class="opt-name">${o.n} <span class="badge" style="background:${o.bc};">${o.b}</span></div><div class="opt-desc">${o.d}</div></button>`; });
+  html+=`</div>`;
+  document.getElementById("setupBody").innerHTML=html;
+  document.getElementById("setupNext").textContent = setupStep===SETUP_STEPS.length-1?'프로그램 생성 →':'다음';
+  document.getElementById("setupNext").disabled = setupChoices[step.key]===undefined;
 }
-function updateTimerDisplay() {
-  const m = String(Math.floor(timerSeconds / 60)).padStart(2, "0");
-  const s = String(timerSeconds % 60).padStart(2, "0");
-  document.getElementById("timerDisplay").textContent = m + ":" + s;
-  const total = timerPhase === "work" ? 30 : 10;
-  document.getElementById("timerBar").style.width = ((total - timerSeconds) / total * 100) + "%";
+function pickOpt(key,val){ setupChoices[key]=val; renderSetupStep(); }
+function setupNextStep(){
+  const step=SETUP_STEPS[setupStep];
+  if(setupChoices[step.key]===undefined){ toast('선택해주세요'); return; }
+  if(setupStep<SETUP_STEPS.length-1){ setupStep++; renderSetupStep(); }
+  else { finishSetup(); }
 }
-function resetTimer() {
-  clearInterval(timerInterval); timerRunning = false; timerPhase = "work"; timerSeconds = 30; timerCycle = 0;
-  document.getElementById("timerState").textContent = "WORK"; document.getElementById("timerState").className = "timer-state work";
-  document.getElementById("timerBtn").textContent = "▶ START"; updateTimerDisplay();
-  releaseWakeLock(); haptic(10);
+function finishSetup(){
+  state.level=setupChoices.level; state.location=setupChoices.location;
+  state.frequency=setupChoices.frequency; state.goal=setupChoices.goal;
+  state.setupDone=true; save();
+  document.getElementById("setup").classList.remove("active");
+  goto('home');
 }
 
-// ========== NOTIFICATION ==========
-async function enableNotifications() {
-  if (!('Notification' in window)) return false;
-  if (Notification.permission === 'granted') return true;
-  if (Notification.permission === 'denied') return false;
-  const p = await Notification.requestPermission();
-  return p === 'granted';
-}
+// =====================================================
+// INIT
+// =====================================================
+if('serviceWorker' in navigator){ window.addEventListener('load',()=>navigator.serviceWorker.register('service-worker.js').catch(()=>{})); }
+document.addEventListener('click',(e)=>{ if(e.target.closest('button,.opt-card,.day-cell,.shop-item,.lib-chip,.style-tab,.nav-item,.mode-card,.settings-item')) haptic(8); },{passive:true});
 
-// ========== GLOBAL HAPTIC (모든 버튼 탭) ==========
-document.addEventListener('click', (e) => {
-  if (e.target.closest('button, .day-cell, .exercise-item, .settings-item, .diff-card, .style-tab, .nav-item, .photo-upload')) {
-    haptic(8);
-  }
-}, { passive: true });
-
-// ========== iOS INSTALL HINT ==========
-function checkIOSInstall() {
-  const ua = navigator.userAgent.toLowerCase();
-  const isIOS = /iphone|ipad|ipod/.test(ua);
-  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
-  const dismissed = localStorage.getItem('iosHintDismissed');
-  if (isIOS && !isStandalone && !dismissed) {
-    setTimeout(() => document.getElementById('iosHint').classList.add('show'), 4000);
-  }
-}
-
-// ========== SERVICE WORKER ==========
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('service-worker.js').catch(() => {});
-  });
-}
-
-// ========== URL ACTION (PWA shortcuts) ==========
-const urlParams = new URLSearchParams(window.location.search);
-const action = urlParams.get('action');
-
-// ========== INIT ==========
-if (!state.setupDone) document.getElementById("intro").classList.add("active");
-else {
-  renderHome();
-  if (action === 'workout') goto('workout');
-  else if (action === 'progress') goto('progress');
-}
-checkIOSInstall();
+if(!state.setupDone){ document.getElementById("intro").classList.add("active"); setupStep=0; renderSetupStep(); }
+else { goto('home'); }
 </script>
-
 </body>
 </html>
