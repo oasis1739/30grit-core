@@ -293,6 +293,30 @@
   .toast.show { opacity: 1; }
   .spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.8s linear infinite; }
   .xp-float { position: fixed; left: 50%; top: 40%; transform: translateX(-50%); font-size: 24px; font-weight: 900; color: var(--gold); z-index: 9998; pointer-events: none; animation: floatUp 1.2s forwards; }
+
+  /* LOCATION TOGGLE (운동화면) */
+  .loc-toggle { display: flex; gap: 6px; margin: 0 0 14px; }
+  .loc-btn { flex: 1; background: var(--bg-2); border: 1px solid var(--line); border-radius: 10px; padding: 11px 4px; font-size: 13px; font-weight: 800; color: var(--text-dim); }
+  .loc-btn.active { background: var(--red); border-color: var(--red); color: #fff; }
+
+  /* SETUP — exercise preference chips */
+  .pref-group { margin-bottom: 18px; }
+  .pref-group-title { font-size: 13px; font-weight: 800; color: var(--red); margin-bottom: 8px; }
+  .pref-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .pref-chip { background: var(--bg-2); border: 1px solid var(--line); border-radius: 999px; padding: 8px 14px; font-size: 13px; font-weight: 700; display: flex; align-items: center; gap: 6px; }
+  .pref-chip.excluded { opacity: 0.4; text-decoration: line-through; border-style: dashed; }
+  .pref-chip .mk { font-size: 11px; }
+  .pref-hint { font-size: 12px; color: var(--text-mute); margin-bottom: 14px; line-height: 1.5; }
+
+  /* CONFETTI (Duolingo-style) */
+  .confetti-piece { position: fixed; top: -24px; width: 10px; height: 14px; z-index: 10000; pointer-events: none; border-radius: 2px; animation: confettiFall linear forwards; }
+  @keyframes confettiFall { to { transform: translateY(110vh) rotate(720deg); opacity: 0.7; } }
+  .flash { position: fixed; inset: 0; background: var(--gold); z-index: 9997; pointer-events: none; animation: flashFade 0.7s forwards; }
+  @keyframes flashFade { from { opacity: 0.5; } to { opacity: 0; } }
+  @keyframes bounce2 { 0%,100% { transform: translateY(0) scale(1); } 30% { transform: translateY(-18px) scale(1.1); } 60% { transform: translateY(0) scale(0.95); } }
+  .celebrate-icon.bounce { animation: popIn 0.4s, bounce2 0.7s 0.4s 2; }
+  @keyframes ringPulse { 0% { box-shadow: 0 0 0 0 rgba(220,38,38,0.6); } 100% { box-shadow: 0 0 0 30px rgba(220,38,38,0); } }
+  .char-avatar.pulse { animation: ringPulse 0.8s 2; }
 </style>
 </head>
 <body>
@@ -362,11 +386,12 @@
     <div class="wh-badges">
       <span class="wh-badge">DAY <span id="wDay">1</span></span>
       <span class="wh-badge alt" id="wSplit">전신</span>
-      <span class="wh-badge alt" id="wLoc">헬스장</span>
     </div>
     <div class="workout-title" id="wTitle">전신 A</div>
     <div class="workout-meta" id="wMeta">예상 35분 · 5개 운동</div>
   </div>
+  <div style="font-size:11px;color:var(--text-mute);margin-bottom:6px;font-weight:700;">📍 오늘 운동 장소</div>
+  <div class="loc-toggle" id="locToggle"></div>
   <div id="exContainer"></div>
   <button class="complete-btn" id="completeBtn" onclick="openCompleteModal()">운동 완료 ✓</button>
 </div>
@@ -446,7 +471,11 @@
   <div class="mode-grid">
     <button class="mode-card" onclick="finishWorkout('photo')">
       <div class="mode-icon">📸</div>
-      <div class="mode-info"><div class="mode-name">지금 인증샷 만들기</div><div class="mode-desc">사진 + 힙한 오버레이로 SNS 공유</div></div>
+      <div class="mode-info"><div class="mode-name">사진 인증샷</div><div class="mode-desc">사진 + 힙한 오버레이로 SNS 공유</div></div>
+    </button>
+    <button class="mode-card" onclick="finishWorkout('video')">
+      <div class="mode-icon">🎥</div>
+      <div class="mode-info"><div class="mode-name">영상으로 기록</div><div class="mode-desc">운동 영상 녹화 → 갤러리 저장</div></div>
     </button>
     <button class="mode-card" onclick="finishWorkout('later')">
       <div class="mode-icon">⏰</div>
@@ -521,6 +550,7 @@
   </div>
 </div>
 
+<input type="file" id="videoInput" accept="video/*" capture="environment" style="display:none" onchange="handleVideo(event)">
 <div class="toast" id="toast"></div>
 
 <!-- PAYWALL -->
@@ -686,12 +716,14 @@ const SHOP_STYLES = [
 // =====================================================
 let state = JSON.parse(localStorage.getItem("30grit_v2") || "null") || {
   setupDone:false, level:'novice', location:'gym', frequency:4, goal:'hypertrophy',
+  excludedExercises:[],
   season:1, currentDay:1, completedDays:[], history:[],
   xp:0, gems:0, totalWorkouts:0, streakFreezes:0,
   character:'default', ownedChars:['default'], ownedStyles:['strava','impact'],
   currentStyle:'strava', boosters:{}, paid:false,
   setLog:{}, photoData:null, lastCompletedDate:null
 };
+if(!state.excludedExercises) state.excludedExercises=[];
 let currentDay = state.currentDay;
 let currentStyle = state.currentStyle || 'strava';
 let setupStep = 0, setupChoices = {};
@@ -709,7 +741,12 @@ function getDayPlan(day){
   const lf = LEVEL_FACTOR[state.level];
   // 부위에서 운동 뽑기 (day 기반 고정 시드)
   let pool = [];
-  tmpl.groups.forEach(g => { EX_DB[g].forEach(ex => pool.push({...ex, group:g})); });
+  const excl = state.excludedExercises || [];
+  tmpl.groups.forEach(g => {
+    let groupEx = EX_DB[g].filter(ex => !excl.includes(ex.id));
+    if(groupEx.length === 0) groupEx = EX_DB[g]; // 전부 제외하면 fallback
+    groupEx.forEach(ex => pool.push({...ex, group:g}));
+  });
   // day 시드로 셔플 고정
   const seed = day * 13 + state.season * 7;
   pool = pool.map((e,i)=>({e,k:(seed*(i+3))%97})).sort((a,b)=>a.k-b.k).map(x=>x.e);
@@ -820,12 +857,18 @@ function renderHome(){
 // =====================================================
 // WORKOUT
 // =====================================================
+function renderLocToggle(){
+  const locs=[['gym','🏋️ 헬스장'],['homegym','🏠 홈짐'],['home','🤸 홈트']];
+  document.getElementById("locToggle").innerHTML = locs.map(([v,l])=>`<button class="loc-btn ${state.location===v?'active':''}" onclick="setLocation('${v}')">${l}</button>`).join('');
+}
+function setLocation(v){ state.location=v; save(); haptic(12); renderWorkout(); }
 function renderWorkout(){
   const plan = getDayPlan(currentDay);
-  if(plan.rest){ document.getElementById("exContainer").innerHTML='<p style="text-align:center;color:var(--text-mute);padding:40px 0;">오늘은 휴식일입니다 💤</p>'; document.getElementById("completeBtn").textContent="휴식 완료 ✓"; return; }
+  renderLocToggle();
+  if(plan.rest){ document.getElementById("locToggle").style.display='none'; document.getElementById("exContainer").innerHTML='<p style="text-align:center;color:var(--text-mute);padding:40px 0;">오늘은 휴식일입니다 💤</p>'; document.getElementById("completeBtn").textContent="휴식 완료 ✓"; return; }
+  document.getElementById("locToggle").style.display='flex';
   document.getElementById("wDay").textContent = currentDay;
   document.getElementById("wSplit").textContent = plan.label;
-  document.getElementById("wLoc").textContent = {gym:'헬스장',homegym:'홈짐',home:'홈트'}[state.location];
   document.getElementById("wTitle").textContent = plan.split+" — "+plan.label;
   document.getElementById("wMeta").textContent = "예상 "+plan.estMin+"분 · "+plan.exercises.length+"개 운동";
   const c = document.getElementById("exContainer"); c.innerHTML="";
@@ -927,23 +970,58 @@ function doComplete(mode){
   if(state.history.length>50) state.history.pop();
 
   stopRest(); save(); haptic([20,40,20]);
-  showXpFloat(xpGain);
 
-  // 리워드 모달
-  document.getElementById("rwXp").textContent=xpGain;
-  document.getElementById("rwGem").textContent=gemGain;
+  // 리워드 모달 + 듀오링고식 연출
+  const icon = document.getElementById("rwIcon");
+  icon.classList.remove("bounce"); void icon.offsetWidth; icon.classList.add("bounce");
   if(leveledUp){
     const t = titleFor(newLevel);
-    document.getElementById("rwIcon").textContent=t.icon;
+    icon.textContent=t.icon;
     document.getElementById("rwTitle").innerHTML='LEVEL UP! <span style="color:var(--gold)">Lv.'+newLevel+'</span>';
-    document.getElementById("rwDesc").textContent='"'+t.name+'" 등급 달성! 새로운 캐릭터/아이템이 상점에 열렸습니다.';
+    document.getElementById("rwDesc").textContent='"'+t.name+'" 등급 달성! 새 캐릭터/아이템이 상점에 열렸습니다.';
+    flashScreen(); confetti(true); haptic([30,60,30,60,80]);
   } else {
-    document.getElementById("rwIcon").textContent= plan.rest?'😌':'🔥';
+    icon.textContent= plan.rest?'😌':(['🔥','💪','⚡','🏆','😤'][currentDay%5]);
     document.getElementById("rwTitle").textContent= plan.rest?'휴식 완료':'DAY '+currentDay+' 완료!';
-    document.getElementById("rwDesc").textContent= streak>0? '연속 '+streak+'일째. 멈추지 마세요.' : '시작이 반이다.';
+    document.getElementById("rwDesc").textContent= streak>1? '연속 '+streak+'일째 🔥 멈추지 마세요.' : '시작이 반이다. 내일 또 만나요.';
+    confetti(false);
   }
   pendingMode = mode;
   document.getElementById("rewardModal").classList.add("active");
+  // 숫자 카운트업
+  countUp(document.getElementById("rwXp"), xpGain, 700);
+  countUp(document.getElementById("rwGem"), gemGain, 700);
+}
+// 듀오링고식 연출 함수
+function confetti(big){
+  const colors=['#DC2626','#FCD34D','#38BDF8','#10B981','#A855F7','#FFFFFF'];
+  const n = big?90:45;
+  for(let i=0;i<n;i++){
+    const p=document.createElement('div'); p.className='confetti-piece';
+    p.style.left=Math.random()*100+'vw';
+    p.style.background=colors[i%colors.length];
+    p.style.animationDelay=(Math.random()*0.3)+'s';
+    p.style.animationDuration=(1+Math.random()*1.4)+'s';
+    const w=6+Math.random()*8; p.style.width=w+'px'; p.style.height=(w*1.4)+'px';
+    if(Math.random()>0.5) p.style.borderRadius='50%';
+    document.body.appendChild(p);
+    setTimeout(()=>p.remove(),2900);
+  }
+}
+function flashScreen(){ const f=document.createElement('div'); f.className='flash'; document.body.appendChild(f); setTimeout(()=>f.remove(),700); }
+function countUp(el,target,dur){
+  const t0=performance.now();
+  function tick(now){ const p=Math.min((now-t0)/dur,1); const eased=1-Math.pow(1-p,3); el.textContent=Math.round(eased*target); if(p<1)requestAnimationFrame(tick); else el.textContent=target; }
+  requestAnimationFrame(tick);
+}
+// 영상 녹화 핸들러
+function handleVideo(e){
+  const f=e.target.files[0]; if(!f){ goto('home'); return; }
+  const url=URL.createObjectURL(f); const a=document.createElement('a');
+  a.href=url; a.download='30GRIT-DAY'+currentDay+'.mp4';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(()=>URL.revokeObjectURL(url),1500);
+  toast('영상 저장됨 🎥 갤러리에서 공유하세요'); haptic(20); goto('home');
 }
 let pendingMode='quiet';
 function closeReward(){
@@ -955,6 +1033,7 @@ function closeReward(){
     currentDay++; state.currentDay=currentDay; save();
   }
   if(pendingMode==='photo'){ openShare(); }
+  else if(pendingMode==='video'){ document.getElementById('videoInput').click(); }
   else if(pendingMode==='later'){ toast('운동 완료! 후기 사진은 진척 탭에서 추가 가능'); goto('home'); }
   else { goto('home'); }
 }
@@ -965,7 +1044,9 @@ function showSeasonComplete(){
   state.gems+=100; document.getElementById("rwXp").textContent=0; document.getElementById("rwGem").textContent=100;
   document.getElementById("rwBtn").textContent='시즌 '+(state.season+1)+' 시작 →';
   document.getElementById("rwBtn").onclick=startNextSeason;
+  const icon=document.getElementById("rwIcon"); icon.classList.remove("bounce"); void icon.offsetWidth; icon.classList.add("bounce");
   document.getElementById("rewardModal").classList.add("active");
+  flashScreen(); confetti(true); setTimeout(()=>confetti(true),400); haptic([40,80,40,80,120]);
   save();
 }
 function startNextSeason(){
@@ -1195,12 +1276,7 @@ const SETUP_STEPS=[
     {v:'intermediate',n:'중급',b:'1~3년',bc:'#DC2626',d:'분할 훈련 익숙. 높은 볼륨.'},
     {v:'advanced',n:'상급',b:'3년+',bc:'#000',d:'고볼륨 고강도. 운동 7개.'}
   ]},
-  { key:'location', q:'어디서 운동하세요?', sub:'장소에 맞춰 운동이 자동 변환됩니다.', opts:[
-    {v:'gym',n:'헬스장',b:'풀 기구',bc:'#DC2626',d:'바벨/머신/케이블 전부 사용.'},
-    {v:'homegym',n:'홈짐',b:'덤벨+밴드',bc:'#3B82F6',d:'덤벨/밴드 위주 변형 운동.'},
-    {v:'home',n:'홈트',b:'맨몸',bc:'#10B981',d:'기구 없이 맨몸 운동만.'}
-  ]},
-  { key:'frequency', q:'주 몇 회 운동?', sub:'빈도에 맞는 분할이 자동 구성됩니다.', opts:[
+  { key:'frequency', q:'주 몇 회 운동?', sub:'빈도에 맞는 분할이 자동 구성됩니다. (장소는 운동할 때마다 선택)', opts:[
     {v:3,n:'주 3회',b:'전신 3분할',bc:'#10B981',d:'전신 A/B/C. 시간 부족한 분.'},
     {v:4,n:'주 4회',b:'상하체 2분할',bc:'#3B82F6',d:'상체/하체 번갈아. 가장 무난.'},
     {v:5,n:'주 5회',b:'5분할',bc:'#DC2626',d:'부위별 집중. 헬창 코스.'},
@@ -1213,28 +1289,50 @@ const SETUP_STEPS=[
     {v:'maintain',n:'체력유지',b:'10-12회',bc:'#3B82F6',d:'균형 잡힌 볼륨.'}
   ]}
 ];
+let excludedSet = new Set();
+const TOTAL_SETUP = SETUP_STEPS.length + 1; // +1 = 운동 선호 단계
 function renderSetupStep(){
-  const step=SETUP_STEPS[setupStep];
   const dots=document.getElementById("setupDots"); dots.innerHTML="";
-  SETUP_STEPS.forEach((_,i)=>{ const d=document.createElement("div"); d.className="setup-dot"+(i<=setupStep?" active":""); dots.appendChild(d); });
-  let html=`<div class="setup-q">${step.q}</div><div class="setup-sub">${step.sub}</div><div class="opt-grid">`;
-  step.opts.forEach(o=>{ const sel=setupChoices[step.key]===o.v; html+=`<button class="opt-card${sel?' selected':''}" onclick="pickOpt('${step.key}',${typeof o.v==='number'?o.v:"'"+o.v+"'"})"><div class="opt-name">${o.n} <span class="badge" style="background:${o.bc};">${o.b}</span></div><div class="opt-desc">${o.d}</div></button>`; });
-  html+=`</div>`;
-  document.getElementById("setupBody").innerHTML=html;
-  document.getElementById("setupNext").textContent = setupStep===SETUP_STEPS.length-1?'프로그램 생성 →':'다음';
-  document.getElementById("setupNext").disabled = setupChoices[step.key]===undefined;
+  for(let i=0;i<TOTAL_SETUP;i++){ const d=document.createElement("div"); d.className="setup-dot"+(i<=setupStep?" active":""); dots.appendChild(d); }
+
+  if(setupStep < SETUP_STEPS.length){
+    // 일반 옵션 단계
+    const step=SETUP_STEPS[setupStep];
+    let html=`<div class="setup-q">${step.q}</div><div class="setup-sub">${step.sub}</div><div class="opt-grid">`;
+    step.opts.forEach(o=>{ const sel=setupChoices[step.key]===o.v; html+=`<button class="opt-card${sel?' selected':''}" onclick="pickOpt('${step.key}',${typeof o.v==='number'?o.v:"'"+o.v+"'"})"><div class="opt-name">${o.n} <span class="badge" style="background:${o.bc};">${o.b}</span></div><div class="opt-desc">${o.d}</div></button>`; });
+    html+=`</div>`;
+    document.getElementById("setupBody").innerHTML=html;
+    document.getElementById("setupNext").textContent='다음';
+    document.getElementById("setupNext").disabled = setupChoices[step.key]===undefined;
+  } else {
+    // 운동 선호 단계
+    let html=`<div class="setup-q">하고 싶은 운동 고르기</div><div class="setup-sub">싫거나 못하는 운동은 빼세요. (예: 허리 안좋으면 데드 제외)</div>
+      <div class="pref-hint">✓ = 포함 · 누르면 제외. 안 골라도 전부 포함됩니다.</div>`;
+    Object.keys(EX_DB).forEach(g=>{
+      html+=`<div class="pref-group"><div class="pref-group-title">${MUSCLE_NAMES[g]}</div><div class="pref-chips">`;
+      EX_DB[g].forEach(ex=>{ const ex2=excludedSet.has(ex.id); html+=`<button class="pref-chip${ex2?' excluded':''}" onclick="togglePref('${ex.id}')"><span class="mk">${ex2?'✕':'✓'}</span>${ex.name}</button>`; });
+      html+=`</div></div>`;
+    });
+    document.getElementById("setupBody").innerHTML=html;
+    document.getElementById("setupNext").textContent='프로그램 생성 →';
+    document.getElementById("setupNext").disabled=false;
+  }
 }
-function pickOpt(key,val){ setupChoices[key]=val; renderSetupStep(); }
+function togglePref(id){ if(excludedSet.has(id)) excludedSet.delete(id); else excludedSet.add(id); haptic(8); renderSetupStep(); }
+function pickOpt(key,val){ setupChoices[key]=val; haptic(10); renderSetupStep(); }
 function setupNextStep(){
-  const step=SETUP_STEPS[setupStep];
-  if(setupChoices[step.key]===undefined){ toast('선택해주세요'); return; }
-  if(setupStep<SETUP_STEPS.length-1){ setupStep++; renderSetupStep(); }
+  if(setupStep < SETUP_STEPS.length){
+    const step=SETUP_STEPS[setupStep];
+    if(setupChoices[step.key]===undefined){ toast('선택해주세요'); return; }
+  }
+  if(setupStep < TOTAL_SETUP-1){ setupStep++; renderSetupStep(); window.scrollTo(0,0); }
   else { finishSetup(); }
 }
 function finishSetup(){
-  state.level=setupChoices.level; state.location=setupChoices.location;
+  state.level=setupChoices.level;
   state.frequency=setupChoices.frequency; state.goal=setupChoices.goal;
-  state.setupDone=true; save();
+  state.location='gym'; // 기본값, 운동화면에서 매번 변경 가능
+  state.excludedExercises=[...excludedSet]; save();
   document.getElementById("setup").classList.remove("active");
   goto('home');
 }
